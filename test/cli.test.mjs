@@ -9,7 +9,7 @@ const CLI = new URL('../src/cli.mjs', import.meta.url).pathname;
 
 // Build a fake $HOME with a claude runtime: session registry + hud state +
 // transcript, so the CLI has real (fixture) sources to read.
-function makeHome() {
+function makeHome({ name = 'Fixture session' } = {}) {
   const home = mkdtempSync(join(tmpdir(), 'hud-home-'));
   const claude = join(home, '.claude');
   const sessionId = 'aaaaaaaa-1111-2222-3333-444444444444';
@@ -40,14 +40,14 @@ function makeHome() {
   );
   writeFileSync(
     join(claude, 'sessions', '4242.json'),
-    JSON.stringify({ pid: process.pid, sessionId, cwd, name: 'Fixture session', status: 'busy', updatedAt: Date.now() })
+    JSON.stringify({ pid: process.pid, sessionId, cwd, name, status: 'busy', updatedAt: Date.now() })
   );
   writeFileSync(
     join(claude, 'hud', 'state', 'sessions', `${sessionId}.json`),
     JSON.stringify({
       v: 1,
       sessionId,
-      sessionName: 'Fixture session',
+      sessionName: name,
       claudePid: process.pid,
       cwd,
       transcriptPath: transcript,
@@ -102,6 +102,13 @@ test('--json emits machine-readable session data', () => {
   assert.equal(j.sessionId, sessionId);
   assert.equal(j.model.name, 'Fable 5');
   assert.ok(Array.isArray(j.skills));
+});
+
+test('--json redacts the session name (no secret leaks in machine output)', () => {
+  const { home } = makeHome({ name: 'deploy AKIAIOSFODNN7EXAMPLE now' });
+  const res = run(['--json'], home);
+  assert.equal(res.status, 0, res.stderr);
+  assert.ok(!res.stdout.includes('AKIAIOSFODNN7EXAMPLE'), res.stdout);
 });
 
 test('--all lists every known session compactly', () => {

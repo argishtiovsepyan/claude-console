@@ -275,8 +275,27 @@ export function rollback({ home, log = console.log }) {
     return 1;
   }
   const latest = join(p.backupsDir, backups[backups.length - 1]);
-  copyFileSync(latest, p.settings);
-  log(`Restored settings.json from ${latest}`);
+  let backup;
+  try {
+    backup = JSON.parse(readFileSync(latest, 'utf8'));
+  } catch {
+    log(`Backup ${latest} is not valid JSON — cannot roll back safely.`);
+    return 1;
+  }
+  const strict = readSettingsStrict(p);
+  if (strict.ok) {
+    // surgical: restore ONLY statusLine from the backup and keep every other
+    // key the user changed since (a full-file copy would silently drop them)
+    const settings = strict.settings;
+    if ('statusLine' in backup) settings.statusLine = backup.statusLine;
+    else delete settings.statusLine;
+    writeSettingsAtomic(p, settings);
+    log(`Restored statusLine from ${latest} (your other settings were preserved)`);
+  } else {
+    // current settings.json is unreadable — restore the full known-good backup
+    copyFileSync(latest, p.settings);
+    log(`Restored full settings.json from ${latest} (the current file was invalid)`);
+  }
   return 0;
 }
 
@@ -304,6 +323,14 @@ export function uninstall({ home, purge = false, log = console.log }) {
     log('Removed statusLine (none existed before install).');
   }
   writeSettingsAtomic(p, settings);
+
+  // clear the recorded original so a later reinstall re-baselines from whatever
+  // statusLine exists at that time — a stale record would block re-capture
+  try {
+    rmSync(p.originalStatusline, { force: true });
+  } catch {
+    // best-effort
+  }
 
   try {
     if (readlinkSync(p.localBin).includes('.claude/hud')) {

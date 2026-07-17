@@ -31,6 +31,29 @@ function run(args, home) {
 
 const readSettings = (home) => JSON.parse(readFileSync(join(home, '.claude', 'settings.json'), 'utf8'));
 
+test('rollback restores only statusLine, preserving settings the user added since', () => {
+  const home = makeHome();
+  run(['install'], home);
+  const s = readSettings(home);
+  s.newHook = 'added-after-install'; // unrelated key added after install
+  writeFileSync(join(home, '.claude', 'settings.json'), JSON.stringify(s, null, 2));
+  const res = run(['rollback'], home);
+  assert.equal(res.status, 0, res.stderr);
+  const after = readSettings(home);
+  assert.equal(after.newHook, 'added-after-install', 'an unrelated key must survive rollback');
+  assert.deepEqual(after.statusLine, ORIGINAL_STATUSLINE, 'statusLine should roll back to the pre-install original');
+  assert.equal(after.model, 'claude-fable-5[1m]', 'other keys untouched');
+});
+
+test('non-purge uninstall clears the recorded original so a later install re-baselines', () => {
+  const home = makeHome();
+  run(['install'], home);
+  const rec = join(home, '.claude', 'hud', 'original-statusline.json');
+  assert.ok(existsSync(rec), 'original recorded on install');
+  run(['uninstall'], home);
+  assert.ok(!existsSync(rec), 'original record cleared on non-purge uninstall');
+});
+
 test('install copies the app, points statusLine at the shim, and backs up settings', () => {
   const home = makeHome();
   const res = run(['install'], home);

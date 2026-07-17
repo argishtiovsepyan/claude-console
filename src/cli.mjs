@@ -184,7 +184,18 @@ function main() {
       return 'No Claude sessions found on this machine.\n(Sessions appear here once Claude Code renders its statusline at least once.)';
     }
     const data = buildSessionData(session, { home, now });
-    if (values.json) return JSON.stringify(data, null, 2);
+    if (values.json) {
+      // --json carries the same redaction guarantee as every rendered surface:
+      // free-text fields not already redacted at the transcript layer (session
+      // name, worktree name, workflow names) pass through redact() here
+      const safe = {
+        ...data,
+        name: data.name ? redact(data.name) : data.name,
+        worktreeName: data.worktreeName ? redact(data.worktreeName) : data.worktreeName,
+        workflows: (data.workflows || []).map((w) => (w.workflowName ? { ...w, workflowName: redact(w.workflowName) } : w)),
+      };
+      return JSON.stringify(safe, null, 2);
+    }
     return renderSessionView(data, {
       width,
       color,
