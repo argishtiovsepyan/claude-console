@@ -141,26 +141,16 @@ test('agent age is runtime (from start), not time-since-last-write', () => {
   assert.ok(/work2.*4s/.test(fb.split('\n').find((l) => l.includes('work2'))), fb);
 });
 
-test('count row shows idle agents next to running, but never lists them below', () => {
+test('idle agents are neither counted nor listed — only running shows', () => {
   const out = render({
     agents: [
       { agentId: 'a1', description: 'live one', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 },
-      { agentId: 'a2', description: 'napping one', model: 'sonnet', state: 'idle', lastActivityMs: NOW - 500000 },
-      { agentId: 'a3', description: 'napping two', model: 'sonnet', state: 'idle', lastActivityMs: NOW - 500000 },
+      { agentId: 'a2', description: 'napping', model: 'sonnet', state: 'idle', lastActivityMs: NOW - 500000 },
     ],
   });
-  assert.ok(/AGENTS\s+1 running · 2 idle/.test(out), out);
-  assert.ok(out.includes('live one'), out);
-  assert.ok(!out.includes('napping'), out); // idle agents are counted, not listed
-  // idle gets its own muted gray (dimmer than the general dim), not C.dim
-  const colored = renderSessionView(
-    sessionData({ agents: [{ agentId: 'a1', description: 'x', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }, { agentId: 'a2', description: 'y', model: 'sonnet', state: 'idle', lastActivityMs: NOW - 500000 }] }),
-    { width: 100, color: true, now: NOW, timeZone: 'UTC' }
-  );
-  assert.ok(/\x1b\[38;5;240m · 1 idle/.test(colored), `idle should use the muted idle gray: ${JSON.stringify(colored.match(/.{0,8}idle/)?.[0])}`);
-  // no idle → no "· N idle" suffix
-  const clean = render({ agents: [{ agentId: 'a1', description: 'solo', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
-  assert.ok(/AGENTS\s+1 running(?!.*idle)/.test(clean.split('\n').find((l) => /AGENTS/.test(l))), clean);
+  assert.ok(/AGENTS\s+1 running/.test(out), out);
+  assert.ok(!out.includes('idle'), out);
+  assert.ok(!out.includes('napping'), out);
 });
 
 test('a running workflow with no recoverable name shows "workflow", never the runId hex', () => {
