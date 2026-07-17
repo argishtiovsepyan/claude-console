@@ -154,9 +154,8 @@ function buildSections(data, ctx) {
     );
   }
   if (running.length > aCap) agentLines.push(paint(C.dim, `   +${running.length - aCap} more`));
-  S.agents = show.agents
-    ? [countRow('AGENTS', running.length, ctx.tight.agents), ...(agentLines.length ? ['', ...agentLines] : [])]
-    : [];
+  // a kind with nothing running is not shown at all (no "0 running" row)
+  S.agents = show.agents && running.length > 0 ? [countRow('AGENTS', running.length, ctx.tight.agents), '', ...agentLines] : [];
 
   const wfs = (data.workflows ?? []).filter((w) => w.status === 'running');
   const wfLines = [];
@@ -178,17 +177,15 @@ function buildSections(data, ctx) {
     );
   }
   if (wfs.length > wCap) wfLines.push(paint(C.dim, `   +${wfs.length - wCap} more`));
-  S.workflows = show.workflows
-    ? [countRow('WORKFLOWS', wfs.length, ctx.tight.workflows), ...(wfLines.length ? ['', ...wfLines] : [])]
-    : [];
+  S.workflows = show.workflows && wfs.length > 0 ? [countRow('WORKFLOWS', wfs.length, ctx.tight.workflows), '', ...wfLines] : [];
 
   // ---------- shells: RIGHT column, under the gauges (count + rows) ----------
   const shells = data.shells ?? [];
   const shellLines = [];
   const sCap = fillCap(shells.length);
-  if (show.shells) {
+  if (show.shells && shells.length > 0) {
     shellLines.push(countRow('SHELLS', shells.length, ctx.tight.shells));
-    if (shells.length) shellLines.push('');
+    shellLines.push('');
     for (const sh of shells.slice(0, sCap)) {
       // one row per shell: $ purpose · age (the raw command stays off-screen)
       const purpose = redact(sh.description || 'purpose unknown');
@@ -280,11 +277,21 @@ export function renderSessionView(
   const mode =
     layout === 'stack' ? 'stack' : width >= 168 ? 'grid5' : width >= 124 ? 'grid3' : width >= 84 ? 'grid2' : 'stack';
   const GUT_W = 3;
-  // grid5 only: extra breathing room in the rail→shells gutter (~12% of the
-  // rail), taken from the live budget so the grid still fits the width
+  // grid5 only: extra breathing room in the rail→(first live) gutter (~12% of
+  // the rail), taken from the live budget so the grid still fits the width
   const RAIL_EXTRA = 6;
   const railExtra = mode === 'grid5' ? RAIL_EXTRA : 0;
+
+  // running counts decide which live columns exist in grid5 — a kind with
+  // nothing running gets no column at all (and no "0 running" row anywhere)
+  const nAgents = (data.agents ?? []).filter((a) => a.state === 'running').length;
+  const nWf = (data.workflows ?? []).filter((w) => w.status === 'running').length;
+  const nShells = (data.shells ?? []).length;
+
+  const g5 = mode === 'grid5';
   let widths = [width];
+  let presentKinds = []; // grid5 live columns in display order
+  const colW = {}; // grid5 per-kind width
   if (mode === 'grid2') {
     const l = Math.min(52, Math.max(36, Math.floor((width - GUT_W) * 0.46)));
     widths = [l, width - l - GUT_W];
@@ -292,18 +299,35 @@ export function renderSessionView(
     const rail = Math.min(46, Math.max(38, Math.floor(width * 0.3)));
     const gauge = 40;
     widths = [rail, width - rail - gauge - 2 * GUT_W, gauge];
-  } else if (mode === 'grid5') {
+  } else if (g5) {
     // the rail widens (to a point) so LOCAL's full path fits un-ellipsized
     const localW = show.where && data.cwd ? RAIL + displayWidth(abbreviateHome(data.cwd)) : 0;
     const base = Math.min(44, Math.max(34, Math.floor(width * 0.21)));
     const rail = Math.min(50, Math.max(base, localW));
     const gauge = 36;
-    const live = width - rail - gauge - 4 * GUT_W - railExtra;
-    const agentsW = Math.floor(live * 0.4);
-    const wfW = Math.floor(live * 0.31);
-    widths = [rail, live - agentsW - wfW, wfW, agentsW, gauge];
+    const WEIGHT = { shells: 0.3, workflows: 0.31, agents: 0.39 };
+    presentKinds = [
+      ['shells', nShells, show.shells],
+      ['workflows', nWf, show.workflows],
+      ['agents', nAgents, show.agents],
+    ]
+      .filter(([, n, on]) => on && n > 0)
+      .map(([k]) => k);
+    const nCols = Math.max(presentKinds.length, 1); // ≥1 keeps gauges right-aligned
+    const live = width - rail - gauge - (nCols + 1) * GUT_W - railExtra;
+    if (presentKinds.length === 0) {
+      colW.__spacer = live; // nothing running: an empty spacer holds the middle
+    } else {
+      const totalW = presentKinds.reduce((s, k) => s + WEIGHT[k], 0);
+      let used = 0;
+      presentKinds.forEach((k, i) => {
+        colW[k] = i === presentKinds.length - 1 ? live - used : Math.floor((live * WEIGHT[k]) / totalW);
+        used += colW[k];
+      });
+    }
+    widths = [rail, ...(presentKinds.length ? presentKinds.map((k) => colW[k]) : [colW.__spacer]), gauge];
   }
-  const detailColW = mode === 'grid5' ? widths[3] : mode === 'grid3' || mode === 'grid2' ? widths[1] : width;
+  const detailColW = mode === 'grid3' || mode === 'grid2' ? widths[1] : width;
   const ctx = {
     paint,
     icons,
@@ -311,23 +335,20 @@ export function renderSessionView(
     now,
     timeZone,
     show,
-    gaugeCells: mode === 'grid5' ? 8 : mode === 'grid3' ? 10 : mode === 'grid2' ? 12 : 14,
+    gaugeCells: g5 ? 8 : mode === 'grid3' ? 10 : mode === 'grid2' ? 12 : 14,
     // grid5 agent rows carry only icon+model+age around the desc → less slack
-    detailDescW: Math.max(12, detailColW - (mode === 'grid5' ? 20 : 24)),
-    wfNameW: mode === 'grid5' ? Math.max(10, widths[2] - 14) : 18,
+    detailDescW: Math.max(12, (g5 ? colW.agents ?? 44 : detailColW) - (g5 ? 20 : 24)),
+    wfNameW: g5 ? Math.max(10, (colW.workflows ?? 26) - 14) : 18,
     // counts hug their labels wherever they head a live column, not the rail
-    tight: { agents: mode !== 'stack', workflows: mode !== 'stack', shells: mode === 'grid5' },
+    tight: { agents: mode !== 'stack', workflows: mode !== 'stack', shells: g5 },
     // grid5 live columns fill their rows down to the LOCAL row: rail height
     // minus the count row and its breathing row
-    liveRows:
-      mode === 'grid5'
-        ? Math.max(5, (show.where ? 3 : 0) + 2 + (data.effort ? 1 : 0) + (show.where ? 3 : 0)) - 2
-        : null,
+    liveRows: g5 ? Math.max(5, (show.where ? 3 : 0) + 2 + (data.effort ? 1 : 0) + (show.where ? 3 : 0)) - 2 : null,
     // shells render in their own column (grid5), the right column (grid3),
     // or the left rail (grid2/stack)
-    railShellW: Math.max(12, (mode === 'grid5' ? widths[1] : mode === 'grid3' ? widths[2] : widths[0]) - 12),
+    railShellW: Math.max(12, (g5 ? colW.shells ?? 26 : mode === 'grid3' ? widths[2] : widths[0]) - 12),
     // LOCAL paths longer than their row truncate in the MIDDLE (tail visible)
-    localValW: Math.max(16, (mode === 'grid5' ? widths[0] : width) - RAIL),
+    localValW: Math.max(16, (g5 ? widths[0] : width) - RAIL),
   };
   const S = buildSections(data, ctx);
 
@@ -360,14 +381,11 @@ export function renderSessionView(
   let lines;
   if (mode === 'grid5') {
     // REMOTE+LOCAL close the rail column so live columns end at LOCAL's row;
-    // gauges stack under CONTEXT at the top, airy (blank between each)
-    lines = zip([
-      joinBlocks([...railBlocks, S.footer]),
-      S.shells,
-      S.workflows,
-      joinBlocks([S.agents, S.skills, S.failures]),
-      airy(S.limits),
-    ]);
+    // gauges stack under CONTEXT at the top, airy (blank between each). Only
+    // the live kinds that are actually running get a column.
+    const blockFor = { shells: S.shells, workflows: S.workflows, agents: joinBlocks([S.agents, S.skills, S.failures]) };
+    const liveCols = presentKinds.length ? presentKinds.map((k) => blockFor[k]) : [[]];
+    lines = zip([joinBlocks([...railBlocks, S.footer]), ...liveCols, airy(S.limits)]);
   } else if (mode === 'grid3') {
     lines = zip([joinBlocks(railBlocks), joinBlocks(middleBlocks), joinBlocks(rightBlocks)]);
   } else if (mode === 'grid2') {

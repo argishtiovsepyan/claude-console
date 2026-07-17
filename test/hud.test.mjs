@@ -198,16 +198,25 @@ test('leadGuard adds spacer rows top AND bottom (gap from input box and Claude U
   assert.equal(lines[lines.length - 1], '⠀', JSON.stringify(lines[lines.length - 1]));
 });
 
-test('empty live sections: counts say 0 running, no placeholder rows', () => {
+test('a kind with nothing running is hidden entirely (no "0 running" row)', () => {
   const out = render(
     { agents: [], workflows: [], shells: [], failures: [], skills: [] },
     { sections: { skills: false, failures: false } }
   );
-  assert.ok(/AGENTS\s+0 running/.test(out), out);
-  assert.ok(/WORKFLOWS\s+0 running/.test(out), out);
-  assert.ok(/SHELLS\s+0 running/.test(out), out);
-  assert.ok(!/\bnone\b/.test(out), out);
+  assert.ok(!/AGENTS/.test(out), out);
+  assert.ok(!/WORKFLOWS/.test(out), out);
+  assert.ok(!/SHELLS/.test(out), out);
+  assert.ok(!/0 running/.test(out), out);
   assert.ok(!out.includes('👾'), out);
+  // the rest of the HUD still renders
+  assert.ok(/MODEL\s+Fable 5/.test(out), out);
+});
+
+test('only the running kinds appear; the others leave no trace', () => {
+  const out = render({ agents: [{ agentId: 'a1', description: 'recon', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }], workflows: [], shells: [] });
+  assert.ok(/AGENTS\s+1 running/.test(out), out);
+  assert.ok(!/WORKFLOWS/.test(out), out);
+  assert.ok(!/SHELLS/.test(out), out);
 });
 
 test('session name and skills never leak secrets', () => {
@@ -229,10 +238,13 @@ test('workspace colors: golden main terminal; orange worktree prefix, white name
   assert.ok(/\x1b\[0;37mgmail-native-tabs/.test(wt), 'worktree name not white');
 });
 
-test('middle column always shows counts, so three columns are always visible', () => {
+test('grid5 drops columns for kinds with nothing running; gauges stay rightmost', () => {
+  // only shells running here → rail | SHELLS | gauges
   const out = renderSessionView(sessionData({ agents: [], workflows: [] }), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const first = out.split('\n')[0];
-  assert.ok(/WORKSPACE.*AGENTS\s+0 running.*CONTEXT/.test(first), first);
+  assert.ok(/WORKSPACE.*SHELLS\s+1 running.*CONTEXT/.test(first), first);
+  assert.ok(!/AGENTS/.test(first), first);
+  assert.ok(!/WORKFLOWS/.test(first), first);
 });
 
 test('grid5 at >=168: shells, workflows, agents each get their own column, gauges rightmost', () => {
@@ -277,10 +289,12 @@ test('grid5 rows land under their own column heads', () => {
   assert.ok(at >= cols[2] && at < cols[3], agentRow);
 });
 
-test('grid5 counts keep all five columns alive when nothing is running', () => {
+test('grid5 with nothing running collapses to rail + gauges (no live columns)', () => {
   const out = renderSessionView(sessionData({ agents: [], workflows: [], shells: [] }), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const first = out.split('\n')[0];
-  assert.ok(/WORKSPACE.*SHELLS\s+0 running.*WORKFLOWS\s+0 running.*AGENTS\s+0 running.*CONTEXT/.test(first), first);
+  assert.ok(/WORKSPACE.*CONTEXT/.test(first), first);
+  assert.ok(!/SHELLS|WORKFLOWS|AGENTS|running/.test(out), out);
+  for (const line of out.split('\n')) assert.ok(displayWidth(line) <= 186, `${displayWidth(line)}: ${line}`);
 });
 
 test('grid5 live columns fill the rows down to LOCAL: workflows up to 7, +N more past that', () => {
