@@ -270,10 +270,10 @@ export function renderSessionView(
   if (leadGuard && !ascii) width = Math.max(40, width - 1);
   const show = { where: true, limits: true, agents: true, workflows: true, skills: true, shells: true, failures: true, ...sections };
   const paint = (code, s) => (color ? `\x1b[${code}m${s}\x1b[0m` : s);
-  // each live kind gets its own glyph: 🐱 agents · 💼 workflows · $ shells
+  // each live kind gets its own glyph: 👾 agents · 💼 workflows · $ shells
   const icons = ascii
     ? { run: '*', done: '+', fail: 'x', wf: '>', dot: ' | ', dash: '-' }
-    : { run: '🐱', done: '✔', fail: '✗', wf: '💼', dot: ' · ', dash: '—' };
+    : { run: '👾', done: '✔', fail: '✗', wf: '💼', dot: ' · ', dash: '—' };
 
   // grid5 (default, wide): rail | agents | workflows | shells | gauges;
   // grid3: rail | agents+workflows | gauges rightmost
