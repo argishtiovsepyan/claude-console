@@ -187,7 +187,7 @@ function buildSections(data, ctx) {
     // 'workflow' rather than the raw runId hex
     wfLines.push(
       `${paint(C.section, icons.wf)}  ` +
-        paint(C.value, truncateDisplay(w.workflowName || 'workflow', ctx.wfNameW, { ascii })) +
+        paint(C.value, truncateDisplay(redact(w.workflowName || 'workflow'), ctx.wfNameW, { ascii })) +
         (prog ? `  ${prog}` : '') +
         (Number.isFinite(w.startTime) ? `  ${paint(C.dim, formatAge(now - w.startTime, { precise: true }))}` : '')
     );

@@ -237,14 +237,20 @@ export function listAgents(
       const launch = launchByAgentId.get(e.agentId) ?? (toolUseId ? events.launches.get(toolUseId) : null);
       const completed =
         events.completedAgentIds.has(e.agentId) || (toolUseId && events.completedToolUseIds.has(toolUseId));
+      // NOTE: a launch record is NOT sufficient to call an agent running —
+      // an async-launched (fire-and-forget) agent never gets a completion
+      // record, so its launch stays in the tail and used to force 'running'
+      // forever. Recency (or the bounded open-tool-call probe below) is the
+      // only signal that it's actually alive.
       let state;
       if (completed) state = 'done';
-      else if (launch || now - e.mtimeMs <= activeWithinMs) state = 'running';
+      else if (now - e.mtimeMs <= activeWithinMs) state = 'running';
       else state = 'idle';
       // quiet ≠ done: a stale-looking agent whose tail holds an unresolved
       // tool_use is waiting on that call (long test run, timer) — running.
-      // Bounded reads keep the statusline hot path sub-second.
-      if (state === 'idle' && now - e.mtimeMs <= 2 * 3600_000 && liveProbes < 24) {
+      // Bounded to 30 min: no real tool call runs longer, so past that a
+      // dangling tool_use means the agent ended, not that it's still waiting.
+      if (state === 'idle' && now - e.mtimeMs <= 30 * 60_000 && liveProbes < 24) {
         liveProbes++;
         if (hasOpenToolUse(e.path)) state = 'running';
       }

@@ -67,10 +67,12 @@ function main() {
 
   // git: branch/worktree every render (cheap); dirty count TTL-cached
   let git = { branch: null, dirtyCount: null, isWorktree: false };
+  let gitTs = now; // when the dirty count was actually computed
   if (status.cwd) {
     const cached = prev?.gitCache;
     if (cached && cached.cwd === status.cwd && now - (cached.ts || 0) < config.gitDirtyTtlMs) {
       git = cached.info;
+      gitTs = cached.ts || now; // preserve the original stamp so the TTL truly elapses (never re-stamp on a hit)
     } else {
       git = gitInfo(status.cwd);
     }
@@ -193,7 +195,7 @@ function main() {
         isWorktree: Boolean(status.gitWorktree || git.isWorktree),
         worktreeName: status.gitWorktree || null,
         dirtyCount: git.dirtyCount,
-        gitCache: { cwd: status.cwd, ts: now, info: git },
+        gitCache: { cwd: status.cwd, ts: gitTs, info: git },
         context: status.context,
         rateLimits: status.rateLimits,
         cost: status.cost,

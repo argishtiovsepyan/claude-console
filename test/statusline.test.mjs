@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -26,6 +26,22 @@ function run(input, envOverrides = {}) {
   });
   return { ...res, hudDir };
 }
+
+test('git dirty-count cache is not re-stamped on a hit, so its TTL actually elapses', () => {
+  const hudDir = mkdtempSync(join(tmpdir(), 'hud-sl-'));
+  const sessDir = join(hudDir, 'state', 'sessions');
+  mkdirSync(sessDir, { recursive: true });
+  const sid = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+  const oldTs = Date.now() - 5000; // within the default 10s TTL -> should be a cache HIT
+  writeFileSync(
+    join(sessDir, `${sid}.json`),
+    JSON.stringify({ sessionId: sid, gitCache: { cwd: '/Users/dev/code/my-repo', ts: oldTs, info: { branch: 'cached', dirtyCount: 7, isWorktree: false } } })
+  );
+  run(SAMPLE, { CLAUDE_HUD_DIR: hudDir });
+  const after = JSON.parse(readFileSync(join(sessDir, `${sid}.json`), 'utf8'));
+  assert.equal(after.gitCache.ts, oldTs, 'a cache hit must preserve the original timestamp, not re-stamp to now');
+  assert.equal(after.gitCache.info.dirtyCount, 7, 'the cached dirty count was used');
+});
 
 test('default statusline renders the FULL session HUD (final design) and exits 0', () => {
   const { status, stdout } = run(SAMPLE);

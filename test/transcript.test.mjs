@@ -253,6 +253,41 @@ test('listAgents merges meta, parent events and liveness', () => {
   assert.equal(byId.w1.isWorkflowAgent, true);
 });
 
+test('an async-launched agent that finished long ago is idle, not running (recency beats launch)', () => {
+  const dir = mkdirSyncTemp();
+  // parent: launch a1 async, NO completion record ever written for it
+  const parent = join(dir, 'parent.jsonl');
+  writeFileSync(
+    parent,
+    [
+      { type: 'assistant', timestamp: iso(1), message: { role: 'assistant', content: [{ type: 'tool_use', id: 'toolu_A1', name: 'Agent', input: { description: 'bg job', subagent_type: 'x' } }] } },
+      { type: 'user', timestamp: iso(2), message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'toolu_A1' }] }, toolUseResult: { status: 'async_launched', agentId: 'a1' } },
+    ]
+      .map((l) => JSON.stringify(l))
+      .join('\n') + '\n'
+  );
+  const sessionDir = join(dir, 'sess');
+  const subagents = join(sessionDir, 'subagents');
+  mkdirSync(subagents, { recursive: true });
+  const af = join(subagents, 'agent-a1.jsonl');
+  // finished long ago: last tool call is RESOLVED (no dangling), file backdated 4h
+  writeFileSync(
+    af,
+    [
+      { type: 'assistant', timestamp: iso(3), message: { role: 'assistant', content: [{ type: 'tool_use', id: 'toolu_x', name: 'Bash', input: { command: 'ls' } }] } },
+      { type: 'user', timestamp: iso(4), message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'toolu_x' }] } },
+    ]
+      .map((l) => JSON.stringify(l))
+      .join('\n') + '\n'
+  );
+  writeFileSync(join(subagents, 'agent-a1.meta.json'), JSON.stringify({ agentType: 'x', description: 'bg job', toolUseId: 'toolu_A1' }));
+  const old = (Date.now() - 4 * 3600_000) / 1000;
+  utimesSync(af, old, old);
+  const agents = listAgents(sessionDir, { parentTranscript: parent, now: Date.now() });
+  const a1 = agents.find((a) => a.agentId === 'a1');
+  assert.equal(a1.state, 'idle', `stale async-launched agent must be idle, not stuck running: ${JSON.stringify(a1)}`);
+});
+
 test('shortModelName maps ids to display families', () => {
   assert.equal(shortModelName('claude-fable-5'), 'fable');
   assert.equal(shortModelName('claude-opus-4-8'), 'opus');

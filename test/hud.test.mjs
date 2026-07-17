@@ -173,6 +173,14 @@ test('idle agents are neither counted nor listed — only running shows', () => 
   assert.ok(!out.includes('napping'), out);
 });
 
+test('workflow names pass through redaction (no secret leaks in the WORKFLOWS column)', () => {
+  const out = renderSessionView(
+    sessionData({ workflows: [{ runId: 'w', workflowName: 'AKIAIOSFODNN7EXAMPLE', status: 'running', progress: null, startTime: NOW - 1000 }] }),
+    { width: 220, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } }
+  );
+  assert.ok(!out.includes('AKIAIOSFODNN7EXAMPLE'), `secret leaked in workflow name: ${out}`);
+});
+
 test('a running workflow with no recoverable name shows "workflow", never the runId hex', () => {
   const out = render({ workflows: [{ runId: 'wf_eeb1fb75-8d3', workflowName: null, status: 'running', progress: { done: 1, total: 13 }, startTime: NOW - 60000 }] });
   const line = out.split('\n').find((l) => l.includes('🛸'));
