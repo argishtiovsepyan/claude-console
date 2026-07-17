@@ -142,7 +142,7 @@ test('running workflows show name + progress + age; completed ones are invisible
       { runId: 'wf_c', workflowName: 'old-finished', status: 'completed', progress: null },
     ],
   });
-  assert.ok(/🚀\s+hud-discovery/.test(out), out);
+  assert.ok(/💼\s+hud-discovery/.test(out), out);
   assert.ok(out.includes('(3/5)'), out);
   const wfLine = out.split('\n').find((l) => l.includes('hud-discovery'));
   assert.ok(!wfLine.includes('█') && !wfLine.includes('░'), `no progress bar on workflow rows: ${wfLine}`);
@@ -270,7 +270,7 @@ test('grid5 rows land under their own column heads', () => {
   const st = shellRow.indexOf('$');
   assert.ok(st >= cols[0] && st < cols[1], shellRow);
   const wfRow = lines.find((l) => l.includes('flow'));
-  const wt = wfRow.indexOf('🚀');
+  const wt = wfRow.indexOf('💼');
   assert.ok(wt >= cols[1] && wt < cols[2], wfRow);
   const agentRow = lines.find((l) => l.includes('recon docs'));
   const at = agentRow.indexOf('🐱');
@@ -300,10 +300,10 @@ test('grid5 live columns fill the rows down to LOCAL: workflows up to 7, +N more
   assert.ok(out.includes('live agent 5'), out);
   assert.ok(!out.includes('live agent 6'), out);
   assert.ok(out.includes('+4 more'), out);
-  // 7 workflows → 6 🚀 rows + "+1 more"
+  // 7 workflows → 6 💼 rows + "+1 more"
   assert.ok(out.includes('flow-5'), out);
   assert.ok(!out.includes('flow-6'), out);
-  assert.equal((out.match(/🚀/g) || []).length, 6, out);
+  assert.equal((out.match(/💼/g) || []).length, 6, out);
   assert.ok(out.includes('+1 more'), out);
   // shells are single-row now: all 5 fit, and no raw command renders
   assert.ok(out.includes('shell 4'), out);
@@ -316,9 +316,9 @@ test('live-column counts hug their labels and get a blank row before details', (
   assert.ok(lines[0].includes('AGENTS    1 running'), lines[0]);
   assert.ok(lines[0].includes('WORKFLOWS    1 running'), lines[0]);
   assert.ok(lines[0].includes('SHELLS    1 running'), lines[0]);
-  const glyphs = (l) => l.includes('🐱') || l.includes('🚀') || l.includes('$');
+  const glyphs = (l) => l.includes('🐱') || l.includes('💼') || l.includes('$');
   assert.ok(!glyphs(lines[1]), `row after counts must be a separator: ${lines[1]}`);
-  assert.ok(lines[2].includes('🐱') && lines[2].includes('🚀') && lines[2].includes('$'), lines[2]);
+  assert.ok(lines[2].includes('🐱') && lines[2].includes('💼') && lines[2].includes('$'), lines[2]);
 });
 
 test('rail: blank under STATUS; REMOTE+LOCAL attached as the final rows, full path, no ellipsis', () => {
@@ -361,7 +361,7 @@ test('workflow progress bar hugs the name (two-space gap, no fixed padding)', ()
     sessionData({ workflows: [{ runId: 'wf_s', workflowName: 'flow', status: 'running', progress: { done: 3, total: 5 } }] }),
     { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } }
   );
-  assert.ok(/🚀\s+flow {2}\(3\/5\)/.test(out), out);
+  assert.ok(/💼\s+flow {2}\(3\/5\)/.test(out), out);
 });
 
 test('long LOCAL paths shrink to the root prefix + … + as much tail as fits', () => {
