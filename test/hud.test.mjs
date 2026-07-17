@@ -104,7 +104,7 @@ test('EFFORT: own row, ultracode purple, omitted when absent', () => {
 
 test('detail shows only running agents, model first then description, max 3, +N more', () => {
   const out = render();
-  assert.ok(/👾\s+sonnet\s+recon docs/.test(out), out);
+  assert.ok(/🐱\s+sonnet\s+recon docs/.test(out), out);
   assert.ok(!out.includes('quick check'), out); // done agent: no row
   const many = render({
     agents: Array.from({ length: 10 }, (_, i) => ({
@@ -207,7 +207,7 @@ test('empty live sections: counts say 0 running, no placeholder rows', () => {
   assert.ok(/WORKFLOWS\s+0 running/.test(out), out);
   assert.ok(/SHELLS\s+0 running/.test(out), out);
   assert.ok(!/\bnone\b/.test(out), out);
-  assert.ok(!out.includes('👾'), out);
+  assert.ok(!out.includes('🐱'), out);
 });
 
 test('session name and skills never leak secrets', () => {
@@ -273,7 +273,7 @@ test('grid5 rows land under their own column heads', () => {
   const wt = wfRow.indexOf('🚀');
   assert.ok(wt >= cols[1] && wt < cols[2], wfRow);
   const agentRow = lines.find((l) => l.includes('recon docs'));
-  const at = agentRow.indexOf('👾');
+  const at = agentRow.indexOf('🐱');
   assert.ok(at >= cols[2] && at < cols[3], agentRow);
 });
 
@@ -316,9 +316,9 @@ test('live-column counts hug their labels and get a blank row before details', (
   assert.ok(lines[0].includes('AGENTS    1 running'), lines[0]);
   assert.ok(lines[0].includes('WORKFLOWS    1 running'), lines[0]);
   assert.ok(lines[0].includes('SHELLS    1 running'), lines[0]);
-  const glyphs = (l) => l.includes('👾') || l.includes('🚀') || l.includes('$');
+  const glyphs = (l) => l.includes('🐱') || l.includes('🚀') || l.includes('$');
   assert.ok(!glyphs(lines[1]), `row after counts must be a separator: ${lines[1]}`);
-  assert.ok(lines[2].includes('👾') && lines[2].includes('🚀') && lines[2].includes('$'), lines[2]);
+  assert.ok(lines[2].includes('🐱') && lines[2].includes('🚀') && lines[2].includes('$'), lines[2]);
 });
 
 test('rail: blank under STATUS; REMOTE+LOCAL attached as the final rows, full path, no ellipsis', () => {
