@@ -209,16 +209,17 @@ function buildSections(data, ctx) {
     }
     const lvl = C[barLevel(pct, thresholds)];
     // no block glyph is vertically centered in its cell, so the bar is drawn
-    // with ▬ (a centered rectangle): filled cells in the level color, empty
-    // cells as a near-black track — equal space above and below the bar
+    // with ▮ (a tall centered rectangle, ~85% of the cell): filled cells in
+    // the level color, empty cells as a near-black track — equal space above
+    // and below the bar
     let bar;
     if (ascii) {
       bar = paint(lvl, `${renderBar(pct, gaugeCells, { ascii })} ${Math.round(pct)}%`);
     } else {
-      const filled = renderBar(pct, gaugeCells, { fill: '▬' }).split('░')[0];
+      const filled = renderBar(pct, gaugeCells, { fill: '▮' }).split('░')[0];
       bar =
         paint(lvl, filled) +
-        paint('38;5;235', '▬'.repeat(gaugeCells - filled.length)) +
+        paint('38;5;235', '▮'.repeat(gaugeCells - filled.length)) +
         paint(lvl, ` ${Math.round(pct)}%`);
     }
     limits.push(row(label, `${bar}${detail ? `  ${paint(C.dim, detail)}` : ''}`));

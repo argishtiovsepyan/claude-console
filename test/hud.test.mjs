@@ -322,16 +322,16 @@ test('grid5 gauges: CONTEXT top; 5-HOUR and 7-DAY attached on the REMOTE/LOCAL r
   assert.ok(lines[li].includes('7-DAY'), lines[li]);
 });
 
-test('gauge bars are vertically centered ▬ with a near-black track for the empty cells', () => {
+test('gauge bars are vertically centered ▮ (tall) with a near-black track for the empty cells', () => {
   const out = render();
   const ctx = out.split('\n').find((l) => /CONTEXT/.test(l));
-  assert.ok(ctx.includes('▬'), ctx);
-  for (const bad of ['█', '▇', '▆', '░']) assert.ok(!ctx.includes(bad), `${bad} in: ${ctx}`);
+  assert.ok(ctx.includes('▮'), ctx);
+  for (const bad of ['█', '▇', '▆', '▬', '░']) assert.ok(!ctx.includes(bad), `${bad} in: ${ctx}`);
   const colored = renderSessionView(sessionData(), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
   const cline = colored.split('\n').find((l) => l.includes('CONTEXT'));
-  assert.ok(/\x1b\[38;5;235m▬/.test(cline), `empty track must be near-black: ${JSON.stringify(cline)}`);
+  assert.ok(/\x1b\[38;5;235m▮/.test(cline), `empty track must be near-black: ${JSON.stringify(cline)}`);
   // filled and track cells still add up to the full gauge width
-  const bar = /▬+/.exec(ctx.replace(/\s/g, ''));
+  const bar = /▮+/.exec(ctx.replace(/\s/g, ''));
   assert.ok(bar && bar[0].length >= 8, ctx);
 });
 
