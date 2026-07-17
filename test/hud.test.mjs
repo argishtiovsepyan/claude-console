@@ -1,7 +1,27 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { renderSessionView, pickSession } from '../src/lib/hud.mjs';
+import { renderSessionView, pickSession, formatAge } from '../src/lib/hud.mjs';
 import { displayWidth } from '../src/lib/ansi.mjs';
+
+test('formatAge: precise keeps seconds in the minute range; default stays compact', () => {
+  assert.equal(formatAge(23_000), '23s');
+  assert.equal(formatAge(83_000), '1m'); // default: compact
+  assert.equal(formatAge(83_000, { precise: true }), '1m 23s');
+  assert.equal(formatAge(605_000, { precise: true }), '10m 5s');
+  assert.equal(formatAge(3_600_000 + 5 * 60_000, { precise: true }), '1h05m'); // hours stay compact
+  assert.equal(formatAge(-1), 'unknown');
+});
+
+test('the live-kind timers show seconds in the minute range', () => {
+  const out = render({
+    agents: [{ agentId: 'a1', description: 'work', model: 'sonnet', state: 'running', startedMs: NOW - 83_000, lastActivityMs: NOW - 2000 }],
+    workflows: [{ runId: 'w', workflowName: 'flow', status: 'running', progress: { done: 1, total: 3 }, startTime: NOW - 95_000 }],
+    shells: [{ command: 'x', description: 'run tests', elapsedMs: 143_000 }],
+  });
+  assert.ok(/work\s+1m 23s/.test(out.split('\n').find((l) => l.includes('work'))), out);
+  assert.ok(/flow.*1m 35s/.test(out.split('\n').find((l) => l.includes('flow'))), out);
+  assert.ok(/run tests\s+2m 23s/.test(out.split('\n').find((l) => l.includes('run tests'))), out);
+});
 
 const NOW = 1784252773000;
 
@@ -163,18 +183,18 @@ test('a running workflow with no recoverable name shows "workflow", never the ru
 test('agent rows pack tight: two-space gaps off the longest model/desc, ages still aligned', () => {
   const data = sessionData({
     agents: [
-      { agentId: 'a1', description: 'recon docs', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 },
-      { agentId: 'a2', description: 'a bigger task', model: 'haiku', state: 'running', lastActivityMs: NOW - 9000 },
+      { agentId: 'a1', description: 'recon', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 },
+      { agentId: 'a2', description: 'bigger task', model: 'haiku', state: 'running', lastActivityMs: NOW - 9000 },
     ],
   });
   const out = renderSessionView(data, { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
-  const l1 = out.split('\n').find((l) => l.includes('recon docs'));
-  const l2 = out.split('\n').find((l) => l.includes('a bigger task'));
+  const l1 = out.split('\n').find((l) => l.includes('recon'));
+  const l2 = out.split('\n').find((l) => l.includes('bigger task'));
   // gaps hug the longest values: sonnet (longest model) and the longer desc
-  assert.equal(l1.indexOf('recon docs') - (l1.indexOf('sonnet') + 'sonnet'.length), 2, l1);
-  assert.equal(l2.indexOf('9s') - (l2.indexOf('a bigger task') + 'a bigger task'.length), 2, l2);
+  assert.equal(l1.indexOf('recon') - (l1.indexOf('sonnet') + 'sonnet'.length), 2, l1);
+  assert.equal(l2.indexOf('9s') - (l2.indexOf('bigger task') + 'bigger task'.length), 2, l2);
   // columns still align across rows
-  assert.equal(l1.indexOf('recon docs'), l2.indexOf('a bigger task'), `${l1}\n${l2}`);
+  assert.equal(l1.indexOf('recon'), l2.indexOf('bigger task'), `${l1}\n${l2}`);
   assert.equal(l1.indexOf('5s'), l2.indexOf('9s'), `${l1}\n${l2}`);
 });
 

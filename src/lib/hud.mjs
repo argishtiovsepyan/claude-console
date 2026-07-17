@@ -32,12 +32,14 @@ const C = {
   fail: '38;5;196',
 };
 
-export function formatAge(ms) {
+// precise=true keeps the seconds ticking inside the minute range ("1m 23s")
+// for the live-kind timers; the default stays compact ("1m") for other uses.
+export function formatAge(ms, { precise = false } = {}) {
   if (!Number.isFinite(ms) || ms < 0) return 'unknown';
   const s = Math.floor(ms / 1000);
   if (s < 60) return `${s}s`;
   const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m`;
+  if (m < 60) return precise ? `${m}m ${s % 60}s` : `${m}m`;
   return `${Math.floor(m / 60)}h${(m % 60).toString().padStart(2, '0')}m`;
 }
 
@@ -162,7 +164,7 @@ function buildSections(data, ctx) {
       `${paint(C.run, icons.run)}  ` +
         padEndDisplay(paint(C.section, s.model), modelW + 2) +
         padEndDisplay(paint(C.value, s.descText), descW + 2) +
-        paint(C.dim, Number.isFinite(startMs) ? formatAge(now - startMs) : '')
+        paint(C.dim, Number.isFinite(startMs) ? formatAge(now - startMs, { precise: true }) : '')
     );
   }
   if (running.length > aCap) agentLines.push(paint(C.dim, `   +${running.length - aCap} more`));
@@ -187,7 +189,7 @@ function buildSections(data, ctx) {
       `${paint(C.section, icons.wf)}  ` +
         paint(C.value, truncateDisplay(w.workflowName || 'workflow', ctx.wfNameW, { ascii })) +
         (prog ? `  ${prog}` : '') +
-        (Number.isFinite(w.startTime) ? `  ${paint(C.dim, formatAge(now - w.startTime))}` : '')
+        (Number.isFinite(w.startTime) ? `  ${paint(C.dim, formatAge(now - w.startTime, { precise: true }))}` : '')
     );
   }
   if (wfs.length > wCap) wfLines.push(paint(C.dim, `   +${wfs.length - wCap} more`));
@@ -212,7 +214,7 @@ function buildSections(data, ctx) {
         paint(C.run, '$') +
           '  ' +
           padEndDisplay(paint(C.value, purpose), purposeW + 2) +
-          (Number.isFinite(sh.elapsedMs) ? paint(C.dim, formatAge(sh.elapsedMs)) : '')
+          (Number.isFinite(sh.elapsedMs) ? paint(C.dim, formatAge(sh.elapsedMs, { precise: true })) : '')
       );
     }
     if (shells.length > sCap) shellLines.push(paint(C.dim, `   +${shells.length - sCap} more`));
@@ -355,8 +357,9 @@ export function renderSessionView(
     show,
     gaugeCells: g5 ? 8 : mode === 'grid3' ? 10 : mode === 'grid2' ? 12 : 14,
     // grid5 agent rows carry only icon+model+age around the desc → less slack
-    detailDescW: Math.max(12, (g5 ? colW.agents ?? 44 : detailColW) - (g5 ? 20 : 24)),
-    wfNameW: g5 ? Math.max(10, (colW.workflows ?? 26) - 14) : 18,
+    // reservations account for the precise "Xm Ys" ages appended to each row
+    detailDescW: Math.max(12, (g5 ? colW.agents ?? 44 : detailColW) - (g5 ? 21 : 24)),
+    wfNameW: g5 ? Math.max(10, (colW.workflows ?? 26) - 18) : 18,
     // counts hug their labels wherever they head a live column, not the rail
     tight: { agents: mode !== 'stack', workflows: mode !== 'stack', shells: g5 },
     // grid5 live columns fill their rows down to the LOCAL row: rail height
