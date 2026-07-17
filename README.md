@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="docs/hud.png" alt="claude-console — the session HUD rendered inside a Claude Code tab" width="100%">
-  <br><sub>A real render — the three-column layout most terminals show; wider terminals get all five columns.</sub>
+  <br><sub>A real render inside a Claude Code tab — the full five-column layout on a wide terminal.</sub>
 </p>
 
 **A live session HUD for [Claude Code](https://claude.com/claude-code), rendered right inside every terminal tab.** It replaces the one-line statusline with a full dashboard — your model, effort, branch, context and rate-limit gauges, and every agent, workflow, and shell the session is running — refreshed as you work. Each tab shows its own session; run `claude-console` for the same view on demand. Zero runtime dependencies, plain Node ≥ 18.
