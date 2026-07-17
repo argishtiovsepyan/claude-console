@@ -117,6 +117,15 @@ test('detail shows only running agents, model first then description, max 3, +N 
   assert.ok(/AGENTS\s+10 running/.test(many), many);
 });
 
+test('agent descriptions drop a leading "Implement" verb', () => {
+  const out = render({ agents: [{ agentId: 'a1', description: 'Implement the login form', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
+  assert.ok(out.includes('The login form'), out);
+  assert.ok(!/Implement/i.test(out), out);
+  // a description that merely contains "implement" mid-word is untouched
+  const kept = render({ agents: [{ agentId: 'a2', description: 'Implementation review', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
+  assert.ok(kept.includes('Implementation review'), kept);
+});
+
 test('agent rows pack tight: two-space gaps off the longest model/desc, ages still aligned', () => {
   const data = sessionData({
     agents: [

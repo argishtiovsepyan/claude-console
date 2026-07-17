@@ -46,6 +46,14 @@ function abbreviateHome(p) {
   return p && p.startsWith(home) ? `~${p.slice(home.length)}` : p;
 }
 
+// Nearly every agent task is phrased "Implement <thing>" — drop the redundant
+// leading verb so the row shows just <thing>. Word-boundary anchored, so
+// "Implementation review" is left alone.
+function trimAgentVerb(desc) {
+  const s = String(desc).replace(/^\s*implement(?:ing|ed|s)?\b[\s:.,—-]*/i, '');
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : desc;
+}
+
 // A too-long path keeps only its root prefix (~/ or /Users/) before the …,
 // giving the trailing directories all the remaining room.
 function shortPath(p, max, ascii) {
@@ -138,7 +146,7 @@ function buildSections(data, ctx) {
     a,
     model: a.model || '',
     descText: truncateDisplay(
-      redact(a.description || (a.isWorkflowAgent ? 'workflow agent' : a.agentType || a.agentId || 'agent')),
+      redact(a.description ? trimAgentVerb(a.description) : a.isWorkflowAgent ? 'workflow agent' : a.agentType || a.agentId || 'agent'),
       detailDescW,
       { ascii }
     ),
