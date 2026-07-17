@@ -343,7 +343,7 @@ test('workflow progress bar hugs the name (two-space gap, no fixed padding)', ()
     sessionData({ workflows: [{ runId: 'wf_s', workflowName: 'flow', status: 'running', progress: { done: 3, total: 5 } }] }),
     { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } }
   );
-  assert.ok(/🚀\s+flow {2}3\/5/.test(out), out);
+  assert.ok(/🚀\s+flow {2}\(3\/5\)/.test(out), out);
 });
 
 test('long LOCAL paths shrink to the root prefix + … + as much tail as fits', () => {
