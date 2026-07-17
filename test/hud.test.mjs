@@ -211,6 +211,23 @@ test('shells: one row each — $ purpose with aligned ages, the raw command neve
   assert.ok(!out.includes('abc.def'), out);
 });
 
+test('shell rows pack tight (age hugs the longest purpose) even when shells is the only live column', () => {
+  const out = renderSessionView(
+    sessionData({ agents: [], workflows: [], shells: [
+      { command: 'x', description: 'run tests', elapsedMs: 12000 },
+      { command: 'x', description: 'tail the dev server logs', elapsedMs: 125000 },
+    ] }),
+    { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } }
+  );
+  const l1 = out.split('\n').find((l) => l.includes('run tests'));
+  const l2 = out.split('\n').find((l) => l.includes('dev server logs'));
+  // the age sits two spaces after the LONGEST purpose, not at the wide column edge
+  assert.equal(l2.indexOf('2m') - (l2.indexOf('tail the dev server logs') + 'tail the dev server logs'.length), 2, l2);
+  // ages still align across rows, and are near the text (not shoved far right)
+  assert.equal(l1.indexOf('12s'), l2.indexOf('2m'), `${l1}\n${l2}`);
+  assert.ok(l1.indexOf('12s') - (l1.indexOf('run tests') + 'run tests'.length) < 20, `age far from text: ${l1}`);
+});
+
 test('shells sit beneath the gauges (after 7-DAY)', () => {
   const lines = stack().split('\n');
   const d = lines.findIndex((l) => /^7-DAY/.test(l));

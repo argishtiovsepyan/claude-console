@@ -200,14 +200,18 @@ function buildSections(data, ctx) {
   if (show.shells && shells.length > 0) {
     shellLines.push(countRow('SHELLS', shells.length, ctx.tight.shells));
     shellLines.push('');
-    for (const sh of shells.slice(0, sCap)) {
-      // one row per shell: $ purpose · age (the raw command stays off-screen)
-      const purpose = redact(sh.description || 'purpose unknown');
-      const dollar = paint(C.run, ascii ? '$' : '$');
+    // pack tight: pad each purpose only to the longest one shown (capped at the
+    // column), so the age hugs the text instead of the far column edge — even
+    // when shells is the only live column and gets the full width
+    const shown = shells
+      .slice(0, sCap)
+      .map((sh) => ({ sh, purpose: truncateDisplay(redact(sh.description || 'purpose unknown'), ctx.railShellW, { ascii }) }));
+    const purposeW = Math.max(0, ...shown.map((s) => displayWidth(s.purpose)));
+    for (const { sh, purpose } of shown) {
       shellLines.push(
-        dollar +
+        paint(C.run, '$') +
           '  ' +
-          padEndDisplay(paint(C.value, truncateDisplay(purpose, ctx.railShellW, { ascii })), ctx.railShellW + 2) +
+          padEndDisplay(paint(C.value, purpose), purposeW + 2) +
           (Number.isFinite(sh.elapsedMs) ? paint(C.dim, formatAge(sh.elapsedMs)) : '')
       );
     }
