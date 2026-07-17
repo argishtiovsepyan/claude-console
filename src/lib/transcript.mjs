@@ -193,7 +193,12 @@ export function listAgents(
   const launchByAgentId = new Map();
   for (const l of events.launches.values()) if (l.agentId) launchByAgentId.set(l.agentId, l);
 
-  let tailReads = 0; // bound the hot path: at most a few small tail reads per render
+  // newest first, so the bounded tail-read budgets below are spent on the
+  // agents most likely to be running — a pile of dead agents in directory
+  // order must never starve a live one of its model read
+  entries.sort((a, b) => b.mtimeMs - a.mtimeMs);
+  let modelReads = 0; // bound the hot path: at most a few small tail reads per render
+  let liveProbes = 0;
   return entries
     .map((e) => {
       const toolUseId = e.meta?.toolUseId ?? null;
@@ -207,16 +212,16 @@ export function listAgents(
       // quiet ≠ done: a stale-looking agent whose tail holds an unresolved
       // tool_use is waiting on that call (long test run, timer) — running.
       // Bounded reads keep the statusline hot path sub-second.
-      if (state === 'idle' && now - e.mtimeMs <= 2 * 3600_000 && tailReads < 12) {
-        tailReads++;
+      if (state === 'idle' && now - e.mtimeMs <= 2 * 3600_000 && liveProbes < 12) {
+        liveProbes++;
         if (hasOpenToolUse(e.path)) state = 'running';
       }
       // meta records what actually ran; the agent's own transcript is the
       // API's word (covers workflow agents, whose meta is bare); the launch
       // input is only the REQUESTED model and can be overridden at spawn
       let model = e.meta?.model ?? null;
-      if (!model && state === 'running' && tailReads < 12) {
-        tailReads++;
+      if (!model && state === 'running' && modelReads < 12) {
+        modelReads++;
         model = modelFromAgentTranscript(e.path);
       }
       if (!model) model = launch?.model ?? null;

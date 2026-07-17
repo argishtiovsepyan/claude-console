@@ -429,6 +429,39 @@ test('listAgents: a quiet agent mid-tool-call (open tool_use) still counts as ru
   assert.equal(byId.idle1.state, 'idle', JSON.stringify(byId.idle1));
 });
 
+test('a pile of dead agents cannot starve running agents of their model reads', () => {
+  const dir = mkdirSyncTemp();
+  const sessionDir = join(dir, 'sess');
+  const subagents = join(sessionDir, 'subagents');
+  const wfAgents = join(subagents, 'workflows', 'wf_starve01-abc');
+  mkdirSync(wfAgents, { recursive: true });
+  // 14 recently-dead agents (resolved tool calls, quiet for 30 min) — enough
+  // to exhaust a shared 12-read budget in directory order
+  const old = (Date.now() - 30 * 60_000) / 1000;
+  for (let i = 0; i < 14; i++) {
+    const p = join(subagents, `agent-dead${String(i).padStart(2, '0')}.jsonl`);
+    writeFileSync(
+      p,
+      [
+        JSON.stringify({ type: 'assistant', timestamp: iso(1), message: { role: 'assistant', model: 'claude-haiku-4-5-20251001', content: [{ type: 'tool_use', id: `toolu_D${i}`, name: 'Bash', input: { command: 'true' } }] } }),
+        JSON.stringify({ type: 'user', timestamp: iso(2), message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: `toolu_D${i}` }] } }),
+      ].join('\n') + '\n'
+    );
+    writeFileSync(join(subagents, `agent-dead${String(i).padStart(2, '0')}.meta.json`), JSON.stringify({ agentType: 'x' }));
+    utimesSync(p, old, old);
+  }
+  // one RUNNING workflow agent: bare meta, model only in its own transcript
+  writeFileSync(
+    join(wfAgents, 'agent-live1.jsonl'),
+    JSON.stringify({ type: 'assistant', timestamp: iso(3), message: { role: 'assistant', model: 'claude-sonnet-5', content: [] } }) + '\n'
+  );
+  writeFileSync(join(wfAgents, 'agent-live1.meta.json'), JSON.stringify({ agentType: 'workflow-subagent' }));
+  const agents = listAgents(sessionDir, { now: Date.now() });
+  const live = agents.find((a) => a.agentId === 'live1');
+  assert.equal(live.state, 'running', JSON.stringify(live));
+  assert.equal(live.model, 'sonnet', `running agent lost its model to the dead pile: ${JSON.stringify(live)}`);
+});
+
 test('listAgents never exposes the agent prompt', () => {
   const { sessionDir, transcript } = buildFixture();
   const agents = listAgents(sessionDir, { parentTranscript: transcript, now: Date.now() });
