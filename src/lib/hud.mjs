@@ -132,21 +132,25 @@ function buildSections(data, ctx) {
   const fillCap = (n) => (ctx.liveRows ? Math.min(n, ctx.liveRows - 1) : CAP);
   const agentLines = [];
   const aCap = fillCap(running.length);
-  for (const a of running.slice(0, aCap)) {
-    const desc = redact(a.description || (a.isWorkflowAgent ? 'workflow agent' : a.agentType || a.agentId || 'agent'));
-    // model first (cyan), the description centered in the slack between the
-    // model and the age column, so no side collects all the gap
-    const descText = truncateDisplay(desc, detailDescW, { ascii });
-    const model = a.model || '';
-    const slack = Math.max(2, detailDescW + 2 + 8 - displayWidth(descText) - displayWidth(model));
-    const gapLeft = Math.floor(slack / 2);
+  // pack tight: model and description pad only to the longest visible value,
+  // two-space gaps between the parts — ages still land in one column
+  const shown = running.slice(0, aCap).map((a) => ({
+    a,
+    model: a.model || '',
+    descText: truncateDisplay(
+      redact(a.description || (a.isWorkflowAgent ? 'workflow agent' : a.agentType || a.agentId || 'agent')),
+      detailDescW,
+      { ascii }
+    ),
+  }));
+  const modelW = Math.max(0, ...shown.map((s) => displayWidth(s.model)));
+  const descW = Math.max(0, ...shown.map((s) => displayWidth(s.descText)));
+  for (const s of shown) {
     agentLines.push(
       `${paint(C.run, icons.run)}  ` +
-        paint(C.section, model) +
-        ' '.repeat(gapLeft) +
-        paint(C.value, descText) +
-        ' '.repeat(slack - gapLeft) +
-        paint(C.dim, Number.isFinite(a.lastActivityMs) ? formatAge(now - a.lastActivityMs) : '')
+        padEndDisplay(paint(C.section, s.model), modelW + 2) +
+        padEndDisplay(paint(C.value, s.descText), descW + 2) +
+        paint(C.dim, Number.isFinite(s.a.lastActivityMs) ? formatAge(now - s.a.lastActivityMs) : '')
     );
   }
   if (running.length > aCap) agentLines.push(paint(C.dim, `   +${running.length - aCap} more`));
@@ -347,15 +351,15 @@ export function renderSessionView(
   // right: gauges with SHELLS beneath them
   const rightBlocks = [airy(S.limits), S.shells];
 
-  // grid5 gauges: CONTEXT holds the top row; the rate limits sit attached
-  // at the bottom, the last one landing on the LOCAL row
+  // grid5 gauges: CONTEXT holds the top row; the rate limits gather at the
+  // bottom with one breathing row between, the last landing on the LOCAL row
   const spreadRows = (block, height) => {
-    if (!block.length || block.length >= height) return block;
+    if (!block.length || block.length * 2 - 1 > height) return block;
     const out = Array.from({ length: height }, () => '');
     out[0] = block[0];
     const rest = block.slice(1);
     rest.forEach((l, i) => {
-      out[height - rest.length + i] = l;
+      out[height - 1 - 2 * (rest.length - 1 - i)] = l;
     });
     return out;
   };

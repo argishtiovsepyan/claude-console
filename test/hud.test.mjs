@@ -117,16 +117,22 @@ test('detail shows only running agents, model first then description, max 3, +N 
   assert.ok(/AGENTS\s+10 running/.test(many), many);
 });
 
-test('agent rows center the description evenly between the model and the age', () => {
-  const out = renderSessionView(sessionData(), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
-  const line = out.split('\n').find((l) => l.includes('recon docs'));
-  const modelEnd = line.indexOf('sonnet') + 'sonnet'.length;
-  const dIdx = line.indexOf('recon docs');
-  const aIdx = line.indexOf('5s', dIdx);
-  const gapLeft = dIdx - modelEnd;
-  const gapRight = aIdx - (dIdx + 'recon docs'.length);
-  assert.ok(gapLeft > 1 && gapRight > 1, line);
-  assert.ok(Math.abs(gapLeft - gapRight) <= 1, `uneven gaps ${gapLeft}/${gapRight}: ${line}`);
+test('agent rows pack tight: two-space gaps off the longest model/desc, ages still aligned', () => {
+  const data = sessionData({
+    agents: [
+      { agentId: 'a1', description: 'recon docs', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 },
+      { agentId: 'a2', description: 'a bigger task', model: 'haiku', state: 'running', lastActivityMs: NOW - 9000 },
+    ],
+  });
+  const out = renderSessionView(data, { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
+  const l1 = out.split('\n').find((l) => l.includes('recon docs'));
+  const l2 = out.split('\n').find((l) => l.includes('a bigger task'));
+  // gaps hug the longest values: sonnet (longest model) and the longer desc
+  assert.equal(l1.indexOf('recon docs') - (l1.indexOf('sonnet') + 'sonnet'.length), 2, l1);
+  assert.equal(l2.indexOf('9s') - (l2.indexOf('a bigger task') + 'a bigger task'.length), 2, l2);
+  // columns still align across rows
+  assert.equal(l1.indexOf('recon docs'), l2.indexOf('a bigger task'), `${l1}\n${l2}`);
+  assert.equal(l1.indexOf('5s'), l2.indexOf('9s'), `${l1}\n${l2}`);
 });
 
 test('running workflows show name + progress + age; completed ones are invisible', () => {
@@ -311,15 +317,16 @@ test('rail: blank under STATUS; REMOTE+LOCAL attached as the final rows, full pa
   assert.ok(!last.includes('…'), last);
 });
 
-test('grid5 gauges: CONTEXT top; 5-HOUR and 7-DAY attached on the REMOTE/LOCAL rows', () => {
+test('grid5 gauges: CONTEXT top; 5-HOUR and 7-DAY at the bottom with one breathing row between', () => {
   const out = renderSessionView(sessionData(), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const lines = out.split('\n');
   assert.ok(lines[0].includes('CONTEXT'), lines[0]);
   const ri = lines.findIndex((l) => /^REMOTE/.test(l));
   const li = lines.findIndex((l) => /^LOCAL/.test(l));
   assert.ok(ri > 0 && li === ri + 1, out);
-  assert.ok(lines[ri].includes('5-HOUR'), lines[ri]);
   assert.ok(lines[li].includes('7-DAY'), lines[li]);
+  assert.ok(!lines[ri].includes('5-HOUR'), lines[ri]);
+  assert.ok(lines[ri - 1].includes('5-HOUR'), lines[ri - 1]);
 });
 
 test('gauge bars are the classic full-block bars (█ filled, ░ empty)', () => {
