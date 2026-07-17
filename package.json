@@ -1,0 +1,21 @@
+{
+  "name": "claude-console",
+  "version": "0.1.0",
+  "description": "Claude Code terminal HUD: the full session dashboard rendered inside every Claude Code tab — agents, workflows, shells, context and rate-limit gauges — plus the claude-console CLI view and a one-command installer. Zero runtime dependencies; data comes from Claude Code's statusline stdin JSON, ~/.claude runtime files, the process table, and git — never from terminal scraping.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Argishti Ovsepyan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/argishtiovsepyan/claude-console.git"
+  },
+  "bin": {
+    "claude-console": "./src/cli.mjs"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
