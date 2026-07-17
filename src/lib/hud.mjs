@@ -167,7 +167,7 @@ function buildSections(data, ctx) {
     // green run markers and cyan model names)
     const prog =
       w.progress?.done != null && w.progress?.total
-        ? paint(C.ultra, `${w.progress.done}/${w.progress.total}`)
+        ? paint(C.ultra, `(${w.progress.done}/${w.progress.total})`)
         : '';
     // the count hugs the name — no fixed padding — then the age
     wfLines.push(
@@ -351,28 +351,16 @@ export function renderSessionView(
   // right: gauges with SHELLS beneath them
   const rightBlocks = [airy(S.limits), S.shells];
 
-  // grid5 gauges: CONTEXT holds the top row; the rate limits gather at the
-  // bottom with one breathing row between, the last landing on the LOCAL row
-  const spreadRows = (block, height) => {
-    if (!block.length || block.length * 2 - 1 > height) return block;
-    const out = Array.from({ length: height }, () => '');
-    out[0] = block[0];
-    const rest = block.slice(1);
-    rest.forEach((l, i) => {
-      out[height - 1 - 2 * (rest.length - 1 - i)] = l;
-    });
-    return out;
-  };
-
   let lines;
   if (mode === 'grid5') {
-    // REMOTE+LOCAL close the rail column so live columns end at LOCAL's row
+    // REMOTE+LOCAL close the rail column so live columns end at LOCAL's row;
+    // gauges stack under CONTEXT at the top, airy (blank between each)
     lines = zip([
       joinBlocks([...railBlocks, S.footer]),
       S.shells,
       S.workflows,
       joinBlocks([S.agents, S.skills, S.failures]),
-      spreadRows(S.limits, ctx.liveRows + 2),
+      airy(S.limits),
     ]);
   } else if (mode === 'grid3') {
     lines = zip([joinBlocks(railBlocks), joinBlocks(middleBlocks), joinBlocks(rightBlocks)]);

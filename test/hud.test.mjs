@@ -143,12 +143,12 @@ test('running workflows show name + progress + age; completed ones are invisible
     ],
   });
   assert.ok(/🚀\s+hud-discovery/.test(out), out);
-  assert.ok(out.includes('3/5'), out);
+  assert.ok(out.includes('(3/5)'), out);
   const wfLine = out.split('\n').find((l) => l.includes('hud-discovery'));
   assert.ok(!wfLine.includes('█') && !wfLine.includes('░'), `no progress bar on workflow rows: ${wfLine}`);
-  assert.ok(/3\/5\s+2m/.test(wfLine), `workflow rows carry their age: ${wfLine}`);
+  assert.ok(/\(3\/5\)\s+2m/.test(wfLine), `workflow rows carry their age: ${wfLine}`);
   const colored = renderSessionView(sessionData(), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
-  assert.ok(/\x1b\[38;5;141m3\/5/.test(colored), 'workflow count must be ultracode purple (the effort tier that unlocks workflows)');
+  assert.ok(/\x1b\[38;5;141m\(3\/5\)/.test(colored), 'workflow count must be purple with purple parentheses');
   assert.ok(!out.includes('old-finished'), out);
   assert.ok(/WORKFLOWS\s+1 running/.test(out), out);
 });
@@ -317,16 +317,18 @@ test('rail: blank under STATUS; REMOTE+LOCAL attached as the final rows, full pa
   assert.ok(!last.includes('…'), last);
 });
 
-test('grid5 gauges: CONTEXT top; 5-HOUR and 7-DAY at the bottom with one breathing row between', () => {
+test('grid5 gauges: stacked under CONTEXT at the top with a breathing row between each', () => {
   const out = renderSessionView(sessionData(), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const lines = out.split('\n');
   assert.ok(lines[0].includes('CONTEXT'), lines[0]);
+  assert.ok(!lines[1].includes('5-HOUR'), lines[1]);
+  assert.ok(lines[2].includes('5-HOUR'), lines[2]);
+  assert.ok(!lines[3].includes('7-DAY'), lines[3]);
+  assert.ok(lines[4].includes('7-DAY'), lines[4]);
   const ri = lines.findIndex((l) => /^REMOTE/.test(l));
   const li = lines.findIndex((l) => /^LOCAL/.test(l));
   assert.ok(ri > 0 && li === ri + 1, out);
-  assert.ok(lines[li].includes('7-DAY'), lines[li]);
-  assert.ok(!lines[ri].includes('5-HOUR'), lines[ri]);
-  assert.ok(lines[ri - 1].includes('5-HOUR'), lines[ri - 1]);
+  assert.ok(!lines[ri].includes('5-HOUR') && !lines[li].includes('7-DAY'), `gauges must not sit on the footer rows:\n${lines[ri]}\n${lines[li]}`);
 });
 
 test('gauge bars are the classic full-block bars (█ filled, ░ empty)', () => {
