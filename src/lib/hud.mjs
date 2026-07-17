@@ -129,12 +129,17 @@ function buildSections(data, ctx) {
 
   // ---------- live detail (MIDDLE column: count row + rows per kind) ----------
   const CAP = 3;
-  const countVal = (n) => paint(n > 0 ? C.run : C.dim, `${n} running`);
+  // "N running" plus a dim "· M idle" when any are idle (idle items are
+  // counted but never listed below)
+  const countVal = (n, idle = 0) =>
+    paint(n > 0 ? C.run : C.dim, `${n} running`) + (idle > 0 ? paint(C.dim, ` · ${idle} idle`) : '');
   // in a live column the count hugs its label (WORKSPACE-style gap);
   // in the rail it aligns with the other labeled rows
-  const countRow = (label, n, tight) => (tight ? paint(C.label, label) + '    ' + countVal(n) : row(label, countVal(n)));
+  const countRow = (label, n, idle, tight) =>
+    tight ? paint(C.label, label) + '    ' + countVal(n, idle) : row(label, countVal(n, idle));
   const agents = data.agents ?? [];
   const running = agents.filter((a) => a.state === 'running');
+  const idleAgents = agents.filter((a) => a.state === 'idle').length;
   // grid5 columns show up to 6 rows — the 7th (LOCAL's row) is reserved for
   // the +N more overflow line; other modes cap at 3
   const fillCap = (n) => (ctx.liveRows ? Math.min(n, ctx.liveRows - 1) : CAP);
@@ -167,7 +172,7 @@ function buildSections(data, ctx) {
   }
   if (running.length > aCap) agentLines.push(paint(C.dim, `   +${running.length - aCap} more`));
   // a kind with nothing running is not shown at all (no "0 running" row)
-  S.agents = show.agents && running.length > 0 ? [countRow('AGENTS', running.length, ctx.tight.agents), '', ...agentLines] : [];
+  S.agents = show.agents && running.length > 0 ? [countRow('AGENTS', running.length, idleAgents, ctx.tight.agents), '', ...agentLines] : [];
 
   const wfs = (data.workflows ?? []).filter((w) => w.status === 'running');
   const wfLines = [];
@@ -191,14 +196,16 @@ function buildSections(data, ctx) {
     );
   }
   if (wfs.length > wCap) wfLines.push(paint(C.dim, `   +${wfs.length - wCap} more`));
-  S.workflows = show.workflows && wfs.length > 0 ? [countRow('WORKFLOWS', wfs.length, ctx.tight.workflows), '', ...wfLines] : [];
+  // workflows and shells have no "idle" state in Claude Code's data (they are
+  // running or gone), so their idle count is always 0
+  S.workflows = show.workflows && wfs.length > 0 ? [countRow('WORKFLOWS', wfs.length, 0, ctx.tight.workflows), '', ...wfLines] : [];
 
   // ---------- shells: RIGHT column, under the gauges (count + rows) ----------
   const shells = data.shells ?? [];
   const shellLines = [];
   const sCap = fillCap(shells.length);
   if (show.shells && shells.length > 0) {
-    shellLines.push(countRow('SHELLS', shells.length, ctx.tight.shells));
+    shellLines.push(countRow('SHELLS', shells.length, 0, ctx.tight.shells));
     shellLines.push('');
     for (const sh of shells.slice(0, sCap)) {
       // one row per shell: $ purpose · age (the raw command stays off-screen)

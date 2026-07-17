@@ -141,6 +141,22 @@ test('agent age is runtime (from start), not time-since-last-write', () => {
   assert.ok(/work2.*4s/.test(fb.split('\n').find((l) => l.includes('work2'))), fb);
 });
 
+test('count row shows idle agents next to running, but never lists them below', () => {
+  const out = render({
+    agents: [
+      { agentId: 'a1', description: 'live one', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 },
+      { agentId: 'a2', description: 'napping one', model: 'sonnet', state: 'idle', lastActivityMs: NOW - 500000 },
+      { agentId: 'a3', description: 'napping two', model: 'sonnet', state: 'idle', lastActivityMs: NOW - 500000 },
+    ],
+  });
+  assert.ok(/AGENTS\s+1 running · 2 idle/.test(out), out);
+  assert.ok(out.includes('live one'), out);
+  assert.ok(!out.includes('napping'), out); // idle agents are counted, not listed
+  // no idle → no "· N idle" suffix
+  const clean = render({ agents: [{ agentId: 'a1', description: 'solo', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
+  assert.ok(/AGENTS\s+1 running(?!.*idle)/.test(clean.split('\n').find((l) => /AGENTS/.test(l))), clean);
+});
+
 test('a running workflow with no recoverable name shows "workflow", never the runId hex', () => {
   const out = render({ workflows: [{ runId: 'wf_eeb1fb75-8d3', workflowName: null, status: 'running', progress: { done: 1, total: 13 }, startTime: NOW - 60000 }] });
   const line = out.split('\n').find((l) => l.includes('🛸'));
