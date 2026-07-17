@@ -389,6 +389,34 @@ test('listWorkflows synthesizes a running entry from a fresh journal when no rec
   assert.deepEqual(wfs[0].progress, { done: 1, total: 3 });
 });
 
+test('listWorkflows recovers a running workflow name from a sibling project slug', () => {
+  // <projects>/<slugA>/<session>/... holds the agent dir; the launcher wrote
+  // the script under <projects>/<slugB>/<session>/workflows/scripts/
+  const projects = mkdtempSync(join(tmpdir(), 'hud-projects-'));
+  const sessionId = 'ssss1111-2222-3333-4444-555555555555';
+  const sessionDir = join(projects, '-Users-dev-repo', sessionId);
+  const liveDir = join(sessionDir, 'subagents', 'workflows', 'wf_cross001-abc');
+  mkdirSync(liveDir, { recursive: true });
+  writeFileSync(join(liveDir, 'journal.jsonl'), [JSON.stringify({ type: 'started', key: 'k', agentId: 'a1' }), JSON.stringify({ type: 'started', key: 'k2', agentId: 'a2' })].join('\n') + '\n');
+  const siblingScripts = join(projects, '-Users-dev-repo--claude-worktrees-x', sessionId, 'workflows', 'scripts');
+  mkdirSync(siblingScripts, { recursive: true });
+  writeFileSync(join(siblingScripts, 'nightly-audit-wf_cross001-abc.js'), 'export const meta = {}\n');
+  const wfs = listWorkflows(sessionDir, { now: Date.now() });
+  assert.equal(wfs.length, 1, JSON.stringify(wfs));
+  assert.equal(wfs[0].workflowName, 'nightly-audit');
+});
+
+test('listWorkflows leaves the name null when no script exists (nested workflow)', () => {
+  const dir = mkdirSyncTemp();
+  const sessionDir = join(dir, 'sess');
+  const liveDir = join(sessionDir, 'subagents', 'workflows', 'wf_nested01-xyz');
+  mkdirSync(liveDir, { recursive: true });
+  writeFileSync(join(liveDir, 'journal.jsonl'), JSON.stringify({ type: 'started', key: 'k', agentId: 'a1' }) + '\n');
+  const wfs = listWorkflows(sessionDir, { now: Date.now() });
+  assert.equal(wfs.length, 1, JSON.stringify(wfs));
+  assert.equal(wfs[0].workflowName, null);
+});
+
 test('listWorkflows does not duplicate a run that already has its record', () => {
   const { sessionDir, wfAgents } = buildFixture();
   // make the fixture workflow's journal look freshly active

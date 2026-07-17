@@ -154,11 +154,15 @@ function buildSections(data, ctx) {
   const modelW = Math.max(0, ...shown.map((s) => displayWidth(s.model)));
   const descW = Math.max(0, ...shown.map((s) => displayWidth(s.descText)));
   for (const s of shown) {
+    // the age is RUNTIME (since the agent started), to match shells and
+    // workflows — not time-since-last-write, which resets on every output.
+    // Birthtime is the start; fall back to last activity where unavailable.
+    const startMs = Number.isFinite(s.a.startedMs) && s.a.startedMs > 0 && s.a.startedMs <= now ? s.a.startedMs : s.a.lastActivityMs;
     agentLines.push(
       `${paint(C.run, icons.run)}  ` +
         padEndDisplay(paint(C.section, s.model), modelW + 2) +
         padEndDisplay(paint(C.value, s.descText), descW + 2) +
-        paint(C.dim, Number.isFinite(s.a.lastActivityMs) ? formatAge(now - s.a.lastActivityMs) : '')
+        paint(C.dim, Number.isFinite(startMs) ? formatAge(now - startMs) : '')
     );
   }
   if (running.length > aCap) agentLines.push(paint(C.dim, `   +${running.length - aCap} more`));
@@ -177,9 +181,11 @@ function buildSections(data, ctx) {
         ? paint(C.ultra, `(${w.progress.done}/${w.progress.total})`)
         : '';
     // the count hugs the name — no fixed padding — then the age
+    // a nested/composed workflow leaves no named script — show a clean
+    // 'workflow' rather than the raw runId hex
     wfLines.push(
       `${paint(C.section, icons.wf)}  ` +
-        paint(C.value, truncateDisplay(w.workflowName || w.runId || 'workflow', ctx.wfNameW, { ascii })) +
+        paint(C.value, truncateDisplay(w.workflowName || 'workflow', ctx.wfNameW, { ascii })) +
         (prog ? `  ${prog}` : '') +
         (Number.isFinite(w.startTime) ? `  ${paint(C.dim, formatAge(now - w.startTime))}` : '')
     );

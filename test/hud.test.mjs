@@ -130,6 +130,24 @@ test('agent descriptions normalize a leading "Implement" to "Implement:" (matche
   assert.ok(kept.includes('Implementation review'), kept);
 });
 
+test('agent age is runtime (from start), not time-since-last-write', () => {
+  // busy agent: wrote 3s ago but started 5 min ago — should read 5m, not 3s
+  const out = render({ agents: [{ agentId: 'a1', description: 'work', model: 'sonnet', state: 'running', startedMs: NOW - 300000, lastActivityMs: NOW - 3000 }] });
+  const line = out.split('\n').find((l) => l.includes('work'));
+  assert.ok(/\b5m\b/.test(line), `expected runtime 5m: ${line}`);
+  assert.ok(!/\b3s\b/.test(line), `must not show idle time: ${line}`);
+  // no birthtime → falls back to last-activity
+  const fb = render({ agents: [{ agentId: 'a2', description: 'work2', model: 'sonnet', state: 'running', lastActivityMs: NOW - 4000 }] });
+  assert.ok(/work2.*4s/.test(fb.split('\n').find((l) => l.includes('work2'))), fb);
+});
+
+test('a running workflow with no recoverable name shows "workflow", never the runId hex', () => {
+  const out = render({ workflows: [{ runId: 'wf_eeb1fb75-8d3', workflowName: null, status: 'running', progress: { done: 1, total: 13 }, startTime: NOW - 60000 }] });
+  const line = out.split('\n').find((l) => l.includes('🛸'));
+  assert.ok(line.includes('workflow'), line);
+  assert.ok(!line.includes('wf_eeb1fb75'), line);
+});
+
 test('agent rows pack tight: two-space gaps off the longest model/desc, ages still aligned', () => {
   const data = sessionData({
     agents: [

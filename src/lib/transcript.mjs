@@ -8,8 +8,40 @@
 // only short descriptions, passed through redact().
 
 import { readdirSync, readFileSync, statSync, openSync, readSync, closeSync, fstatSync } from 'node:fs';
-import { join, basename } from 'node:path';
+import { join, basename, dirname } from 'node:path';
 import { redact } from './redact.mjs';
+
+// The launcher writes a running workflow's script as
+// `<session>/workflows/scripts/<name>-<runId>.js`, but when the workflow was
+// launched from a worktree/subdir the script lands under a DIFFERENT project
+// slug for the same session id. Look in this session's own scripts dir first,
+// then the same session id under every sibling slug.
+function findWorkflowName(sessionDir, wf) {
+  const suffix = `-${wf}.js`;
+  const nameFrom = (dir) => {
+    try {
+      for (const f of readdirSync(dir)) if (f.endsWith(suffix)) return f.slice(0, -suffix.length);
+    } catch {
+      /* no scripts dir here */
+    }
+    return null;
+  };
+  const local = nameFrom(join(sessionDir, 'workflows', 'scripts'));
+  if (local) return local;
+  const sessionId = basename(sessionDir);
+  const projectsRoot = dirname(dirname(sessionDir));
+  let slugs = [];
+  try {
+    slugs = readdirSync(projectsRoot);
+  } catch {
+    return null;
+  }
+  for (const slug of slugs) {
+    const hit = nameFrom(join(projectsRoot, slug, sessionId, 'workflows', 'scripts'));
+    if (hit) return hit;
+  }
+  return null; // nested / composed workflows leave no named script — no name to recover
+}
 
 export function slugForCwd(cwd) {
   return String(cwd).replace(/[^a-zA-Z0-9-]/g, '-');
@@ -302,19 +334,9 @@ export function listWorkflows(sessionDir, { now = Date.now(), activeWithinMs = 4
       if (rec?.type === 'started') started++;
       else if (rec?.type === 'result') done++;
     }
-    // the run's NAME only reaches the record at completion, but the launcher
-    // writes the script as workflows/scripts/<name>-<runId>.js at start
-    let name = null;
-    try {
-      for (const f of readdirSync(join(dir, 'scripts'))) {
-        if (f.endsWith(`-${wf}.js`)) {
-          name = f.slice(0, -(wf.length + 4));
-          break;
-        }
-      }
-    } catch {
-      // no scripts dir — keep the runId as the display name
-    }
+    // the run's NAME only reaches the record at completion; while running,
+    // recover it from the launcher's script file (this slug or a sibling one)
+    const name = findWorkflowName(sessionDir, wf);
     out.push({
       runId: wf,
       workflowName: name,
