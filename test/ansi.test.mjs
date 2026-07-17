@@ -2,6 +2,14 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { stripAnsi, displayWidth, truncateDisplay, truncateMiddleDisplay, padEndDisplay, color, RESET } from '../src/lib/ansi.mjs';
 
+test('a base char + VS16 (U+FE0F) is one width-2 emoji-presentation glyph', () => {
+  assert.equal(displayWidth('❤️'), 2); // U+2764 U+FE0F — was miscounted as 1
+  assert.equal(displayWidth('a❤️b'), 4);
+  // truncation keeps the pair intact and never exceeds the width
+  const t = truncateDisplay('❤️xxxxx', 3);
+  assert.ok(displayWidth(t) <= 3, JSON.stringify(t));
+});
+
 test('truncateMiddleDisplay keeps head and tail around the ellipsis, within width', () => {
   assert.equal(truncateMiddleDisplay('abcdefghijklmnop', 9), 'abc…lmnop');
   assert.equal(truncateMiddleDisplay('abcdefghijklmnop', 9, { headMax: 2 }), 'ab…klmnop');

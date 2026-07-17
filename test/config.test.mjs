@@ -5,6 +5,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { defaultConfig, loadConfig } from '../src/lib/config.mjs';
 
+test('NO_COLOR disables color for any value, including empty string (spec)', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'hud-cfg-'));
+  assert.equal(loadConfig(dir, { NO_COLOR: '' }).style.color, false);
+  assert.equal(loadConfig(dir, { NO_COLOR: '1' }).style.color, false);
+  assert.equal(loadConfig(dir, {}).style.color, true);
+});
+
 test('defaults preserve the legacy look and thresholds', () => {
   const c = defaultConfig();
   assert.equal(c.style.ascii, false);

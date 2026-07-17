@@ -46,8 +46,18 @@ function codePointWidth(cp) {
 }
 
 export function displayWidth(s) {
+  const chars = [...stripAnsi(s)];
   let w = 0;
-  for (const ch of stripAnsi(s)) w += codePointWidth(ch.codePointAt(0));
+  for (let i = 0; i < chars.length; i++) {
+    // a base char followed by VS16 (U+FE0F) is one emoji-presentation glyph =
+    // width 2, regardless of the base's own default width
+    if (i + 1 < chars.length && chars[i + 1].codePointAt(0) === 0xfe0f) {
+      w += 2;
+      i++; // consume the VS16 (already zero-width on its own)
+      continue;
+    }
+    w += codePointWidth(chars[i].codePointAt(0));
+  }
   return w;
 }
 
@@ -66,8 +76,15 @@ function tokenize(s) {
       }
     }
     const cp = str.codePointAt(i);
-    const ch = String.fromCodePoint(cp);
-    out.push({ ansi: false, text: ch, width: codePointWidth(cp) });
+    let ch = String.fromCodePoint(cp);
+    let width = codePointWidth(cp);
+    // keep a base char and its trailing VS16 as ONE width-2 token so truncation
+    // never splits the pair and the width matches displayWidth
+    if (str.codePointAt(i + ch.length) === 0xfe0f) {
+      ch += '️';
+      width = 2;
+    }
+    out.push({ ansi: false, text: ch, width });
     i += ch.length;
   }
   return out;

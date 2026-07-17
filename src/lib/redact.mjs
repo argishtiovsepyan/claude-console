@@ -32,8 +32,10 @@ const RULES = [
   { re: /\b(bearer\s+)[A-Za-z0-9._~+/-]+=*/gi, sub: `$1${REDACTED}` },
 
   // --- URLs ---
-  // userinfo password: scheme://user:pass@host
-  { re: /(\w+:\/\/[^/\s:@]+):([^@\s/]+)@/g, sub: `$1:${REDACTED}@` },
+  // userinfo password: scheme://user:pass@host. Length-bounded so backtracking
+  // can't scale with input size (real schemes/hosts/userinfo are never huge) —
+  // an unbounded run of word chars with no ':' was O(n^2) = a render-hang risk.
+  { re: /(\w{1,32}:\/\/[^/\s:@]{1,256}):([^@\s/]{1,256})@/g, sub: `$1:${REDACTED}@` },
   // sensitive query params
   {
     re: /([?&](?:access_token|refresh_token|id_token|token|apikey|api_key|key|secret|password|signature|sig|auth|session)=)([^&\s"']+)/gi,

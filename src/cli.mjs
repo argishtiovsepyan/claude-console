@@ -165,7 +165,7 @@ function main() {
 
   const hudDir = process.env.CLAUDE_HUD_DIR || join(home, '.claude', 'hud');
   const config = loadConfig(hudDir, process.env);
-  const color = !values['no-color'] && config.style.color !== false && process.env.NO_COLOR === undefined;
+  const color = !values['no-color'] && config.style.color !== false; // config already applies NO_COLOR
   const ascii = values.ascii || config.style.ascii;
   const width = Math.min(process.stdout.columns || Number(process.env.COLUMNS) || 100, 140);
 

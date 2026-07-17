@@ -2,6 +2,14 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { redact, REDACTED } from '../src/lib/redact.mjs';
 
+test('redact stays fast on adversarial input (no quadratic backtracking)', () => {
+  const s = 'a'.repeat(20000); // long undelimited run — used to make the URL rule O(n^2)
+  const t0 = process.hrtime.bigint();
+  redact(s);
+  const ms = Number(process.hrtime.bigint() - t0) / 1e6;
+  assert.ok(ms < 50, `redact too slow (${ms.toFixed(1)}ms) — possible quadratic backtracking`);
+});
+
 // ---------- known token prefixes ----------
 
 test('redacts Anthropic API keys', () => {

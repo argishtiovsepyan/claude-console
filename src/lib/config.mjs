@@ -96,6 +96,6 @@ export function loadConfig(hudDir, env = process.env) {
   }
   const cfg = deepMerge(defaultConfig(), user);
   if (env.CLAUDE_HUD_ASCII === '1' || env.CLAUDE_HUD_ASCII === 'true') cfg.style.ascii = true;
-  if (env.NO_COLOR !== undefined && env.NO_COLOR !== '') cfg.style.color = false;
+  if (env.NO_COLOR !== undefined) cfg.style.color = false; // NO_COLOR spec: any value (incl. empty) disables color
   return cfg;
 }
