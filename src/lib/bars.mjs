@@ -2,10 +2,10 @@
 // previous ~/.claude/statusline-command.sh awk formulas so the upgrade
 // renders identically for the same inputs.
 
-export function renderBar(pct, width, { ascii = false, fill } = {}) {
+export function renderBar(pct, width, { ascii = false } = {}) {
   const p = Number.isFinite(Number(pct)) ? Number(pct) : 0;
   const filled = Math.min(width, Math.max(0, Math.floor((p / 100) * width + 0.5)));
-  const [full, empty] = ascii ? ['#', '-'] : [fill ?? '█', '░'];
+  const [full, empty] = ascii ? ['#', '-'] : ['█', '░'];
   return full.repeat(filled) + empty.repeat(width - filled);
 }
 
