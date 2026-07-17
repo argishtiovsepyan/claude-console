@@ -2,6 +2,7 @@
 
 <p align="center">
   <img src="docs/hud.png" alt="claude-console — the session HUD rendered inside a Claude Code tab" width="100%">
+  <br><sub>A real render — the three-column layout most terminals show; wider terminals get all five columns.</sub>
 </p>
 
 **A live session HUD for [Claude Code](https://claude.com/claude-code), rendered right inside every terminal tab.** It replaces the one-line statusline with a full dashboard — your model, effort, branch, context and rate-limit gauges, and every agent, workflow, and shell the session is running — refreshed as you work. Each tab shows its own session; run `claude-console` for the same view on demand. Zero runtime dependencies, plain Node ≥ 18.
@@ -19,7 +20,7 @@ cd claude-console
 # 3 — open a new Claude Code tab. The HUD appears under the input box.
 ```
 
-That's it. The installer points your Claude Code statusline at `claude-console` and touches nothing else. It renders **only** inside Claude Code sessions — plain terminals are unaffected.
+**Clone it anywhere — the location doesn't matter.** `install.sh` copies the app into `~/.claude/hud/` and points Claude Code's statusline at that copy, so **every** Claude Code tab on your machine gets the HUD, in any directory. It renders only inside Claude Code sessions — plain terminals are untouched. (Keep the clone around only if you want to `git pull` and `claude-console update` later.)
 
 Remove it any time with `claude-console uninstall`, which restores your previous statusline exactly.
 
