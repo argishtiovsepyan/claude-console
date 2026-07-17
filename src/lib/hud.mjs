@@ -23,6 +23,7 @@ const C = {
   section: '0;36',
   value: '0;37',
   dim: '38;5;245',
+  idle: '38;5;240', // a hair dimmer than dim — idle recedes, barely there
   gutter: '38;5;238',
   low: '38;5;154',
   mid: '38;5;220',
@@ -132,7 +133,7 @@ function buildSections(data, ctx) {
   // "N running" plus a dim "· M idle" when any are idle (idle items are
   // counted but never listed below)
   const countVal = (n, idle = 0) =>
-    paint(n > 0 ? C.run : C.dim, `${n} running`) + (idle > 0 ? paint(C.dim, ` · ${idle} idle`) : '');
+    paint(n > 0 ? C.run : C.dim, `${n} running`) + (idle > 0 ? paint(C.idle, ` · ${idle} idle`) : '');
   // in a live column the count hugs its label (WORKSPACE-style gap);
   // in the rail it aligns with the other labeled rows
   const countRow = (label, n, idle, tight) =>

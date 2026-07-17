@@ -152,6 +152,12 @@ test('count row shows idle agents next to running, but never lists them below', 
   assert.ok(/AGENTS\s+1 running · 2 idle/.test(out), out);
   assert.ok(out.includes('live one'), out);
   assert.ok(!out.includes('napping'), out); // idle agents are counted, not listed
+  // idle gets its own muted gray (dimmer than the general dim), not C.dim
+  const colored = renderSessionView(
+    sessionData({ agents: [{ agentId: 'a1', description: 'x', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }, { agentId: 'a2', description: 'y', model: 'sonnet', state: 'idle', lastActivityMs: NOW - 500000 }] }),
+    { width: 100, color: true, now: NOW, timeZone: 'UTC' }
+  );
+  assert.ok(/\x1b\[38;5;240m · 1 idle/.test(colored), `idle should use the muted idle gray: ${JSON.stringify(colored.match(/.{0,8}idle/)?.[0])}`);
   // no idle → no "· N idle" suffix
   const clean = render({ agents: [{ agentId: 'a1', description: 'solo', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
   assert.ok(/AGENTS\s+1 running(?!.*idle)/.test(clean.split('\n').find((l) => /AGENTS/.test(l))), clean);
