@@ -20,9 +20,7 @@ cd claude-console
 # 3 — open a new Claude Code tab. The HUD appears under the input box.
 ```
 
-**Clone it anywhere — the location doesn't matter.** `install.sh` copies the app into `~/.claude/hud/` and points Claude Code's statusline at that copy, so **every** Claude Code tab on your machine gets the HUD, in any directory. It renders only inside Claude Code sessions — plain terminals are untouched. (Keep the clone around only if you want to `git pull` and `claude-console update` later.)
-
-Remove it any time with `claude-console uninstall`, which restores your previous statusline exactly.
+**Clone it anywhere — the location doesn't matter.** `install.sh` copies the app into `~/.claude/hud/` and points Claude Code's statusline at that copy, so every Claude Code tab on your machine gets it.
 
 ## What you're looking at
 
