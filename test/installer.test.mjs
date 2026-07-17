@@ -40,7 +40,7 @@ test('install copies the app, points statusLine at the shim, and backs up settin
   assert.ok(existsSync(join(home, '.claude', 'hud', 'manifest.json')));
   const s = readSettings(home);
   assert.ok(s.statusLine.command.includes('hud/bin/statusline.sh'), JSON.stringify(s.statusLine));
-  assert.equal(s.statusLine.refreshInterval, 3); // real-time status/age updates
+  assert.equal(s.statusLine.refreshInterval, 1); // real-time status/age updates
   // untouched settings survive
   assert.equal(s.model, 'claude-fable-5[1m]');
   assert.equal(s.hooks.PreToolUse[0].hooks[0].command, 'echo hi');

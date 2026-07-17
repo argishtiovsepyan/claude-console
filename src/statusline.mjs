@@ -85,11 +85,11 @@ function main() {
   if (mode === 'hud') {
     // the final design, rendered per tab from THIS session's own sources
     const agents = sessionDir
-      ? listAgents(sessionDir, { parentTranscript: status.transcriptPath, now, maxParentBytes: 768 * 1024 })
+      ? listAgents(sessionDir, { parentTranscript: status.transcriptPath, now, maxParentBytes: 1536 * 1024 })
       : [];
     const workflows = sessionDir ? listWorkflows(sessionDir) : [];
     const shells = status.transcriptPath
-      ? inFlightBash(status.transcriptPath, { maxBytes: 512 * 1024 }).map((b) => ({
+      ? inFlightBash(status.transcriptPath, { maxBytes: 1024 * 1024 }).map((b) => ({
           command: b.command,
           description: b.description,
           elapsedMs: b.ts ? now - b.ts : null,

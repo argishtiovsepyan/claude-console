@@ -206,7 +206,7 @@ function agentFilesIn(dir, isWorkflowAgent, wfRunId = null) {
 
 export function listAgents(
   sessionDir,
-  { parentTranscript = null, now = Date.now(), activeWithinMs = 45_000, maxParentBytes = 2 * 1024 * 1024 } = {}
+  { parentTranscript = null, now = Date.now(), activeWithinMs = 60_000, maxParentBytes = 2 * 1024 * 1024 } = {}
 ) {
   const subagents = join(sessionDir, 'subagents');
   const entries = agentFilesIn(subagents, false);
@@ -244,7 +244,7 @@ export function listAgents(
       // quiet ≠ done: a stale-looking agent whose tail holds an unresolved
       // tool_use is waiting on that call (long test run, timer) — running.
       // Bounded reads keep the statusline hot path sub-second.
-      if (state === 'idle' && now - e.mtimeMs <= 2 * 3600_000 && liveProbes < 12) {
+      if (state === 'idle' && now - e.mtimeMs <= 2 * 3600_000 && liveProbes < 24) {
         liveProbes++;
         if (hasOpenToolUse(e.path)) state = 'running';
       }
@@ -252,7 +252,7 @@ export function listAgents(
       // API's word (covers workflow agents, whose meta is bare); the launch
       // input is only the REQUESTED model and can be overridden at spawn
       let model = e.meta?.model ?? null;
-      if (!model && state === 'running' && modelReads < 12) {
+      if (!model && state === 'running' && modelReads < 16) {
         modelReads++;
         model = modelFromAgentTranscript(e.path);
       }
@@ -272,7 +272,7 @@ export function listAgents(
     .sort((a, b) => b.lastActivityMs - a.lastActivityMs);
 }
 
-export function listWorkflows(sessionDir, { now = Date.now(), activeWithinMs = 45_000 } = {}) {
+export function listWorkflows(sessionDir, { now = Date.now(), activeWithinMs = 120_000 } = {}) {
   const dir = join(sessionDir, 'workflows');
   const out = [];
   const seen = new Set();
@@ -481,7 +481,7 @@ export function lastActivityTs(transcriptPath, { maxBytes = 256 * 1024 } = {}) {
 }
 
 // Hot-path counts for the compact statusline: one readdir pass, no JSON parsing.
-export function activeCounts(sessionDir, { now = Date.now(), activeWithinMs = 45_000 } = {}) {
+export function activeCounts(sessionDir, { now = Date.now(), activeWithinMs = 60_000 } = {}) {
   let agents = 0;
   let workflows = 0;
   const subagents = join(sessionDir, 'subagents');

@@ -173,8 +173,9 @@ export function install({ home, log = console.log }) {
     changed.push(`recorded original statusLine -> ${p.originalStatusline}`);
   }
   // refreshInterval re-runs the statusline on a timer so STATUS (busy/idle),
-  // agent ages and shell timers stay real-time even when the session is quiet
-  settings.statusLine = { type: 'command', command: `bash "$HOME/.claude/${SHIM_MARKER}"`, refreshInterval: 3 };
+  // agent ages and shell timers stay real-time even when the session is quiet.
+  // 1s keeps the second-granularity timers ticking smoothly (renders are ~40ms)
+  settings.statusLine = { type: 'command', command: `bash "$HOME/.claude/${SHIM_MARKER}"`, refreshInterval: 1 };
   writeSettingsAtomic(p, settings);
   changed.push('settings.json statusLine -> claude-console shim');
   writeFileSync(p.manifest, JSON.stringify(manifest, null, 2) + '\n');
