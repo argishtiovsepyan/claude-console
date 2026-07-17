@@ -134,17 +134,17 @@ function buildSections(data, ctx) {
   const aCap = fillCap(running.length);
   for (const a of running.slice(0, aCap)) {
     const desc = redact(a.description || (a.isWorkflowAgent ? 'workflow agent' : a.agentType || a.agentId || 'agent'));
-    // description first, the model (cyan) centered in the slack between the
-    // description text and the age column, so no side collects all the gap
+    // model first (cyan), the description centered in the slack between the
+    // model and the age column, so no side collects all the gap
     const descText = truncateDisplay(desc, detailDescW, { ascii });
     const model = a.model || '';
     const slack = Math.max(2, detailDescW + 2 + 8 - displayWidth(descText) - displayWidth(model));
     const gapLeft = Math.floor(slack / 2);
     agentLines.push(
       `${paint(C.run, icons.run)}  ` +
-        paint(C.value, descText) +
-        ' '.repeat(gapLeft) +
         paint(C.section, model) +
+        ' '.repeat(gapLeft) +
+        paint(C.value, descText) +
         ' '.repeat(slack - gapLeft) +
         paint(C.dim, Number.isFinite(a.lastActivityMs) ? formatAge(now - a.lastActivityMs) : '')
     );
@@ -158,10 +158,12 @@ function buildSections(data, ctx) {
   const wfLines = [];
   const wCap = fillCap(wfs.length);
   for (const w of wfs.slice(0, wCap)) {
-    // no bar — a cyan done/total count reads better at this size
+    // no bar — a done/total count reads better at this size; ultracode purple,
+    // since that's the effort tier that unlocks workflows (distinct from the
+    // green run markers and cyan model names)
     const prog =
       w.progress?.done != null && w.progress?.total
-        ? paint(C.section, `${w.progress.done}/${w.progress.total}`)
+        ? paint(C.ultra, `${w.progress.done}/${w.progress.total}`)
         : '';
     // the count hugs the name — no fixed padding — then the age
     wfLines.push(
@@ -206,9 +208,19 @@ function buildSections(data, ctx) {
       return;
     }
     const lvl = C[barLevel(pct, thresholds)];
-    // 7/8 block (▇) instead of the full block: stacked gauge rows keep a
-    // hairline gap so attached bars never fuse into one slab
-    const bar = paint(lvl, `${renderBar(pct, gaugeCells, { ascii, fill: '▇' })} ${Math.round(pct)}%`);
+    // no block glyph is vertically centered in its cell, so the bar is drawn
+    // with ▬ (a centered rectangle): filled cells in the level color, empty
+    // cells as a near-black track — equal space above and below the bar
+    let bar;
+    if (ascii) {
+      bar = paint(lvl, `${renderBar(pct, gaugeCells, { ascii })} ${Math.round(pct)}%`);
+    } else {
+      const filled = renderBar(pct, gaugeCells, { fill: '▬' }).split('░')[0];
+      bar =
+        paint(lvl, filled) +
+        paint('38;5;235', '▬'.repeat(gaugeCells - filled.length)) +
+        paint(lvl, ` ${Math.round(pct)}%`);
+    }
     limits.push(row(label, `${bar}${detail ? `  ${paint(C.dim, detail)}` : ''}`));
   };
   gaugeRow(

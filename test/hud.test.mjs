@@ -102,9 +102,9 @@ test('EFFORT: own row, ultracode purple, omitted when absent', () => {
 
 // ---------- live detail ----------
 
-test('detail shows only running agents, description first then model, max 3, +N more', () => {
+test('detail shows only running agents, model first then description, max 3, +N more', () => {
   const out = render();
-  assert.ok(/👾\s+recon docs\s+sonnet/.test(out), out);
+  assert.ok(/👾\s+sonnet\s+recon docs/.test(out), out);
   assert.ok(!out.includes('quick check'), out); // done agent: no row
   const many = render({
     agents: Array.from({ length: 10 }, (_, i) => ({
@@ -117,14 +117,14 @@ test('detail shows only running agents, description first then model, max 3, +N 
   assert.ok(/AGENTS\s+10 running/.test(many), many);
 });
 
-test('agent rows center the model evenly between the description text and the age', () => {
+test('agent rows center the description evenly between the model and the age', () => {
   const out = renderSessionView(sessionData(), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const line = out.split('\n').find((l) => l.includes('recon docs'));
-  const descEnd = line.indexOf('recon docs') + 'recon docs'.length;
-  const mIdx = line.indexOf('sonnet');
-  const aIdx = line.indexOf('5s', mIdx);
-  const gapLeft = mIdx - descEnd;
-  const gapRight = aIdx - (mIdx + 'sonnet'.length);
+  const modelEnd = line.indexOf('sonnet') + 'sonnet'.length;
+  const dIdx = line.indexOf('recon docs');
+  const aIdx = line.indexOf('5s', dIdx);
+  const gapLeft = dIdx - modelEnd;
+  const gapRight = aIdx - (dIdx + 'recon docs'.length);
   assert.ok(gapLeft > 1 && gapRight > 1, line);
   assert.ok(Math.abs(gapLeft - gapRight) <= 1, `uneven gaps ${gapLeft}/${gapRight}: ${line}`);
 });
@@ -142,7 +142,7 @@ test('running workflows show name + progress + age; completed ones are invisible
   assert.ok(!wfLine.includes('█') && !wfLine.includes('░'), `no progress bar on workflow rows: ${wfLine}`);
   assert.ok(/3\/5\s+2m/.test(wfLine), `workflow rows carry their age: ${wfLine}`);
   const colored = renderSessionView(sessionData(), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
-  assert.ok(/\x1b\[0;36m3\/5/.test(colored), 'workflow count must be cyan like the agent model');
+  assert.ok(/\x1b\[38;5;141m3\/5/.test(colored), 'workflow count must be ultracode purple (the effort tier that unlocks workflows)');
   assert.ok(!out.includes('old-finished'), out);
   assert.ok(/WORKFLOWS\s+1 running/.test(out), out);
 });
@@ -322,11 +322,17 @@ test('grid5 gauges: CONTEXT top; 5-HOUR and 7-DAY attached on the REMOTE/LOCAL r
   assert.ok(lines[li].includes('7-DAY'), lines[li]);
 });
 
-test('gauge bars use the 7/8 block so stacked bars keep a hairline gap', () => {
+test('gauge bars are vertically centered ▬ with a near-black track for the empty cells', () => {
   const out = render();
   const ctx = out.split('\n').find((l) => /CONTEXT/.test(l));
-  assert.ok(ctx.includes('▇'), ctx);
-  assert.ok(!ctx.includes('█'), ctx);
+  assert.ok(ctx.includes('▬'), ctx);
+  for (const bad of ['█', '▇', '▆', '░']) assert.ok(!ctx.includes(bad), `${bad} in: ${ctx}`);
+  const colored = renderSessionView(sessionData(), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
+  const cline = colored.split('\n').find((l) => l.includes('CONTEXT'));
+  assert.ok(/\x1b\[38;5;235m▬/.test(cline), `empty track must be near-black: ${JSON.stringify(cline)}`);
+  // filled and track cells still add up to the full gauge width
+  const bar = /▬+/.exec(ctx.replace(/\s/g, ''));
+  assert.ok(bar && bar[0].length >= 8, ctx);
 });
 
 test('workflow progress bar hugs the name (two-space gap, no fixed padding)', () => {
