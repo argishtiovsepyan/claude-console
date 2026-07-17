@@ -46,12 +46,12 @@ function abbreviateHome(p) {
   return p && p.startsWith(home) ? `~${p.slice(home.length)}` : p;
 }
 
-// Nearly every agent task is phrased "Implement <thing>" — drop the redundant
-// leading verb so the row shows just <thing>. Word-boundary anchored, so
-// "Implementation review" is left alone.
-function trimAgentVerb(desc) {
-  const s = String(desc).replace(/^\s*implement(?:ing|ed|s)?\b[\s:.,—-]*/i, '');
-  return s ? s.charAt(0).toUpperCase() + s.slice(1) : desc;
+// Normalize a leading "Implement <thing>" to "Implement: <thing>" so it reads
+// the same as the "Review: <thing>" style Claude Code already uses for some
+// tasks. Word-boundary anchored ("Implementation review" is left alone) and a
+// no-op when the colon is already there.
+function normalizeAgentVerb(desc) {
+  return String(desc).replace(/^(\s*)implement(?:ing|ed|s)?\b(?!:)[\s.,—-]*/i, '$1Implement: ');
 }
 
 // A too-long path keeps only its root prefix (~/ or /Users/) before the …,
@@ -146,7 +146,7 @@ function buildSections(data, ctx) {
     a,
     model: a.model || '',
     descText: truncateDisplay(
-      redact(a.description ? trimAgentVerb(a.description) : a.isWorkflowAgent ? 'workflow agent' : a.agentType || a.agentId || 'agent'),
+      redact(a.description ? normalizeAgentVerb(a.description) : a.isWorkflowAgent ? 'workflow agent' : a.agentType || a.agentId || 'agent'),
       detailDescW,
       { ascii }
     ),

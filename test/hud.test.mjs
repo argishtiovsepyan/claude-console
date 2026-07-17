@@ -117,12 +117,16 @@ test('detail shows only running agents, model first then description, max 3, +N 
   assert.ok(/AGENTS\s+10 running/.test(many), many);
 });
 
-test('agent descriptions drop a leading "Implement" verb', () => {
+test('agent descriptions normalize a leading "Implement" to "Implement:" (matches the Review: style)', () => {
   const out = render({ agents: [{ agentId: 'a1', description: 'Implement the login form', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
-  assert.ok(out.includes('The login form'), out);
-  assert.ok(!/Implement/i.test(out), out);
-  // a description that merely contains "implement" mid-word is untouched
-  const kept = render({ agents: [{ agentId: 'a2', description: 'Implementation review', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
+  assert.ok(out.includes('Implement: the login form'), out);
+  // "Implement 6675 cron fallback" -> "Implement: 6675 cron fallback"
+  const num = render({ agents: [{ agentId: 'a2', description: 'Implement 6675 cron fallback', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
+  assert.ok(num.includes('Implement: 6675 cron fallback'), num);
+  // already-colonized and mid-word "implement" are left exactly as-is
+  const already = render({ agents: [{ agentId: 'a3', description: 'Review: the diff', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
+  assert.ok(already.includes('Review: the diff'), already);
+  const kept = render({ agents: [{ agentId: 'a4', description: 'Implementation review', model: 'sonnet', state: 'running', lastActivityMs: NOW - 5000 }] });
   assert.ok(kept.includes('Implementation review'), kept);
 });
 
