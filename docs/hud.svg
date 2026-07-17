@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1610" height="261" viewBox="0 0 1610 261" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="14.5">
+  <rect x="0.5" y="0.5" width="1609" height="260" rx="10" fill="#0c110d" stroke="#232f25"/>
+  <path d="M0 10 Q0 0 10 0 H1600 Q1610 0 1610 10 V40 H0 Z" fill="#161d17"/>
+  <line x1="0" y1="40" x2="1610" y2="40" stroke="#232f25"/>
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <text x="805" y="24" fill="#74857a" font-size="12" text-anchor="middle">claude · claude-console — zsh</text>
+<text x="22.0" y="70.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKSPACE</text>
+<text x="133.8" y="70.5" fill="#e6c14d" textLength="111.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">main terminal</text>
+<text x="529.4" y="70.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">SHELLS</text>
+<text x="615.4" y="70.5" fill="#8fd653" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">3 running</text>
+<text x="761.6" y="70.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKFLOWS</text>
+<text x="873.4" y="70.5" fill="#8fd653" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">2 running</text>
+<text x="993.8" y="70.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">AGENTS</text>
+<text x="1079.8" y="70.5" fill="#8fd653" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">4 running</text>
+<text x="1294.8" y="70.5" fill="#74857a" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">CONTEXT</text>
+<text x="1406.6" y="70.5" fill="#e6c14d" textLength="103.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">█████░░░ 57%</text>
+<text x="1527.0" y="70.5" fill="#74857a" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">570k/1M</text>
+<text x="22.0" y="91.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">BRANCH</text>
+<text x="133.8" y="91.5" fill="#5cc8c2" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">main</text>
+<text x="176.8" y="91.5" fill="#e6c14d" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">+3</text>
+<text x="529.4" y="112.5" fill="#8fd653" textLength="8.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
+<text x="555.2" y="112.5" fill="#cbd8ce" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">run tests</text>
+<text x="675.6" y="112.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">12s</text>
+<text x="761.6" y="112.5" fill="#5cc8c2" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">🛸</text>
+<text x="796.0" y="112.5" fill="#cbd8ce" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">review</text>
+<text x="864.8" y="112.5" fill="#af87ff" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">(3/5)</text>
+<text x="925.0" y="112.5" fill="#74857a" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">3m</text>
+<text x="993.8" y="112.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
+<text x="1028.2" y="112.5" fill="#5cc8c2" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">sonnet</text>
+<text x="1097.0" y="112.5" fill="#cbd8ce" textLength="103.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">security re…</text>
+<text x="1217.4" y="112.5" fill="#74857a" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">4s</text>
+<text x="1294.8" y="112.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">5-HOUR</text>
+<text x="1406.6" y="112.5" fill="#8fd653" textLength="103.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">████░░░░ 55%</text>
+<text x="1527.0" y="112.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→20:40</text>
+<text x="22.0" y="133.5" fill="#74857a" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">MODEL</text>
+<text x="133.8" y="133.5" fill="#cbd8ce" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Fable 5</text>
+<text x="529.4" y="133.5" fill="#8fd653" textLength="8.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
+<text x="555.2" y="133.5" fill="#cbd8ce" textLength="86.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">dev server</text>
+<text x="675.6" y="133.5" fill="#74857a" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">2m</text>
+<text x="761.6" y="133.5" fill="#5cc8c2" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">🛸</text>
+<text x="796.0" y="133.5" fill="#cbd8ce" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">test-plan</text>
+<text x="890.6" y="133.5" fill="#af87ff" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">(1/4)</text>
+<text x="950.8" y="133.5" fill="#74857a" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">1m</text>
+<text x="993.8" y="133.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
+<text x="1028.2" y="133.5" fill="#5cc8c2" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">sonnet</text>
+<text x="1097.0" y="133.5" fill="#cbd8ce" textLength="94.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">code review</text>
+<text x="1217.4" y="133.5" fill="#74857a" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">9s</text>
+<text x="22.0" y="154.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">EFFORT</text>
+<text x="133.8" y="154.5" fill="#af87ff" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">ultracode</text>
+<text x="529.4" y="154.5" fill="#8fd653" textLength="8.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
+<text x="555.2" y="154.5" fill="#cbd8ce" textLength="68.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">watch CI</text>
+<text x="675.6" y="154.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">47s</text>
+<text x="993.8" y="154.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
+<text x="1028.2" y="154.5" fill="#5cc8c2" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">haiku</text>
+<text x="1097.0" y="154.5" fill="#cbd8ce" textLength="103.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">standards s…</text>
+<text x="1217.4" y="154.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">16s</text>
+<text x="1294.8" y="154.5" fill="#74857a" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">7-DAY</text>
+<text x="1406.6" y="154.5" fill="#8fd653" textLength="103.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">█░░░░░░░ 17%</text>
+<text x="1527.0" y="154.5" fill="#74857a" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→Sat</text>
+<text x="22.0" y="175.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">STATUS</text>
+<text x="133.8" y="175.5" fill="#5cc8c2" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">busy</text>
+<text x="993.8" y="175.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
+<text x="1028.2" y="175.5" fill="#5cc8c2" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">sonnet</text>
+<text x="1097.0" y="175.5" fill="#cbd8ce" textLength="86.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">docs audit</text>
+<text x="1217.4" y="175.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">25s</text>
+<text x="22.0" y="217.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">REMOTE</text>
+<text x="133.8" y="217.5" fill="#cbd8ce" textLength="266.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">argishtiovsepyan/claude-console</text>
+<text x="22.0" y="238.5" fill="#74857a" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">LOCAL</text>
+<text x="133.8" y="238.5" fill="#cbd8ce" textLength="318.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">/Users/argo/Desktop/X1/claude-console</text>
+</svg>
