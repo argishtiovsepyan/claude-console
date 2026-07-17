@@ -242,16 +242,34 @@ test('grid5 at >=168: shells, workflows, agents each get their own column, gauge
   for (const line of out.split('\n')) assert.ok(displayWidth(line) <= 186, `${displayWidth(line)}: ${line}`);
 });
 
+test('grid5 rail→shells gutter carries extra breathing room', () => {
+  const out = renderSessionView(sessionData({ shells: [{ command: 'x', description: 'short', elapsedMs: 12000 }] }), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
+  const first = out.split('\n')[0];
+  const shells = first.indexOf('SHELLS');
+  // with an even split SHELLS would sit at rail(48)+gut(3)=51; the widened
+  // rail→shells gutter pushes it clearly further right
+  assert.ok(shells >= 55, `rail→shells gap should be widened: SHELLS at ${shells}\n${first}`);
+  // a shell row still lines up under its own SHELLS head
+  const shellRow = out.split('\n').find((l) => l.includes('short'));
+  assert.equal(shellRow.indexOf('$'), shells, `${first}\n${shellRow}`);
+});
+
 test('grid5 rows land under their own column heads', () => {
-  const out = renderSessionView(sessionData(), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
+  const out = renderSessionView(
+    sessionData({
+      workflows: [{ runId: 'wf_x', workflowName: 'flow', status: 'running', progress: { done: 3, total: 5 }, startTime: NOW - 120000 }],
+      shells: [{ command: 'x', description: 'short', elapsedMs: 12000 }],
+    }),
+    { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } }
+  );
   const lines = out.split('\n');
   const first = lines[0];
   const cols = ['SHELLS', 'WORKFLOWS', 'AGENTS', 'CONTEXT'].map((h) => first.indexOf(h));
   assert.ok(cols.every((c, i) => c > (cols[i - 1] ?? 0)), first);
-  const shellRow = lines.find((l) => l.includes('Run full API'));
+  const shellRow = lines.find((l) => l.includes('short'));
   const st = shellRow.indexOf('$');
   assert.ok(st >= cols[0] && st < cols[1], shellRow);
-  const wfRow = lines.find((l) => l.includes('hud-discovery'));
+  const wfRow = lines.find((l) => l.includes('flow'));
   const wt = wfRow.indexOf('🚀');
   assert.ok(wt >= cols[1] && wt < cols[2], wfRow);
   const agentRow = lines.find((l) => l.includes('recon docs'));

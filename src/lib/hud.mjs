@@ -280,6 +280,10 @@ export function renderSessionView(
   const mode =
     layout === 'stack' ? 'stack' : width >= 168 ? 'grid5' : width >= 124 ? 'grid3' : width >= 84 ? 'grid2' : 'stack';
   const GUT_W = 3;
+  // grid5 only: extra breathing room in the rail→shells gutter (~12% of the
+  // rail), taken from the live budget so the grid still fits the width
+  const RAIL_EXTRA = 6;
+  const railExtra = mode === 'grid5' ? RAIL_EXTRA : 0;
   let widths = [width];
   if (mode === 'grid2') {
     const l = Math.min(52, Math.max(36, Math.floor((width - GUT_W) * 0.46)));
@@ -294,7 +298,7 @@ export function renderSessionView(
     const base = Math.min(44, Math.max(34, Math.floor(width * 0.21)));
     const rail = Math.min(50, Math.max(base, localW));
     const gauge = 36;
-    const live = width - rail - gauge - 4 * GUT_W;
+    const live = width - rail - gauge - 4 * GUT_W - railExtra;
     const agentsW = Math.floor(live * 0.4);
     const wfW = Math.floor(live * 0.31);
     widths = [rail, live - agentsW - wfW, wfW, agentsW, gauge];
@@ -328,6 +332,8 @@ export function renderSessionView(
   const S = buildSections(data, ctx);
 
   const gut = gutter === 'space' ? ' '.repeat(GUT_W) : ` ${paint(C.gutter, ascii ? '|' : '│')} `;
+  // the rail (column 0) gets a wider gutter in grid5; every other gap is gut
+  const gutAfter = (k) => (k === 0 && railExtra ? gut + ' '.repeat(railExtra) : gut);
   const zip = (cols) => {
     const n = Math.max(...cols.map((c) => c.length));
     const out = [];
@@ -335,7 +341,7 @@ export function renderSessionView(
       let line = '';
       cols.forEach((col, k) => {
         const cell = truncateDisplay(col[i] ?? '', widths[k], { ascii });
-        line += k < cols.length - 1 ? padEndDisplay(cell, widths[k]) + gut : cell;
+        line += k < cols.length - 1 ? padEndDisplay(cell, widths[k]) + gutAfter(k) : cell;
       });
       out.push(line.trimEnd());
     }
