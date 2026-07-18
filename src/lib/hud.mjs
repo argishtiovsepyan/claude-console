@@ -3,16 +3,15 @@
 //
 // Default layout is five columns (≥168 cols) — every live kind owns a lane:
 //   rail | SHELLS | WORKFLOWS | AGENTS | gauges   (user-locked order)
-// REMOTE+LOCAL close the rail column, and each live column fills its rows
-// down to the LOCAL row (dynamic caps; overflow folds into "+N more").
+// The rail is WORKSPACE/BRANCH + MODEL/EFFORT/STATUS only (no REMOTE/LOCAL);
+// each live column shows up to 6 rows, overflow folds into "+N more".
 // 124–167 folds to three columns (agents+workflows share the middle, shells
 // under the gauges); 84–123 folds to two (gauges join the left rail);
 // below 84 everything stacks. No titles, no rules, no PR row (user-locked).
 // Every rendered string passes redact(); unknown data says "unknown".
 
 import { basename } from 'node:path';
-import { homedir } from 'node:os';
-import { displayWidth, truncateDisplay, truncateMiddleDisplay, padEndDisplay } from './ansi.mjs';
+import { displayWidth, truncateDisplay, padEndDisplay } from './ansi.mjs';
 import { renderBar, barLevel } from './bars.mjs';
 import { formatTokens, formatReset } from './segments.mjs';
 import { redact } from './redact.mjs';
@@ -43,24 +42,12 @@ export function formatAge(ms, { precise = false } = {}) {
   return `${Math.floor(m / 60)}h${(m % 60).toString().padStart(2, '0')}m`;
 }
 
-function abbreviateHome(p) {
-  const home = homedir();
-  return p && p.startsWith(home) ? `~${p.slice(home.length)}` : p;
-}
-
 // Normalize a leading "Implement <thing>" to "Implement: <thing>" so it reads
 // the same as the "Review: <thing>" style Claude Code already uses for some
 // tasks. Word-boundary anchored ("Implementation review" is left alone) and a
 // no-op when the colon is already there.
 function normalizeAgentVerb(desc) {
   return String(desc).replace(/^(\s*)implement(?:ing|ed|s)?\b(?!:)[\s.,—-]*/i, '$1Implement: ');
-}
-
-// A too-long path keeps only its root prefix (~/ or /Users/) before the …,
-// giving the trailing directories all the remaining room.
-function shortPath(p, max, ascii) {
-  const prefix = /^(~\/|\/[^/]+\/)/.exec(p);
-  return truncateMiddleDisplay(p, max, { ascii, headMax: prefix ? displayWidth(prefix[1]) : 4 });
 }
 
 function buildSections(data, ctx) {
@@ -114,20 +101,6 @@ function buildSections(data, ctx) {
     ident.push(row('STATUS', paint(stColor, st)));
   }
   S.ident = ident;
-
-  // REMOTE + LOCAL sit attached as the HUD's final full-width rows —
-  // LOCAL shows the whole path, no ellipsis, capped only by the total width
-  S.footer = show.where
-    ? [
-        row(
-          'REMOTE',
-          data.repo?.name
-            ? paint(C.value, `${data.repo.owner ? `${data.repo.owner}/` : ''}${data.repo.name}`)
-            : paint(C.dim, 'unknown')
-        ),
-        row('LOCAL', data.cwd ? paint(C.value, shortPath(abbreviateHome(data.cwd), ctx.localValW, ascii)) : paint(C.dim, 'unknown')),
-      ]
-    : [];
 
   // ---------- live detail (MIDDLE column: count row + rows per kind) ----------
   const CAP = 3;
@@ -320,10 +293,7 @@ export function renderSessionView(
     const gauge = 40;
     widths = [rail, width - rail - gauge - 2 * GUT_W, gauge];
   } else if (g5) {
-    // the rail widens (to a point) so LOCAL's full path fits un-ellipsized
-    const localW = show.where && data.cwd ? RAIL + displayWidth(abbreviateHome(data.cwd)) : 0;
-    const base = Math.min(44, Math.max(34, Math.floor(width * 0.21)));
-    const rail = Math.min(50, Math.max(base, localW));
+    const rail = Math.min(44, Math.max(34, Math.floor(width * 0.21)));
     const gauge = 36;
     const WEIGHT = { shells: 0.3, workflows: 0.31, agents: 0.39 };
     presentKinds = [
@@ -362,14 +332,11 @@ export function renderSessionView(
     wfNameW: g5 ? Math.max(10, (colW.workflows ?? 26) - 18) : 18,
     // counts hug their labels wherever they head a live column, not the rail
     tight: { agents: mode !== 'stack', workflows: mode !== 'stack', shells: g5 },
-    // grid5 live columns fill their rows down to the LOCAL row: rail height
-    // minus the count row and its breathing row
-    liveRows: g5 ? Math.max(5, (show.where ? 3 : 0) + 2 + (data.effort ? 1 : 0) + (show.where ? 3 : 0)) - 2 : null,
+    // grid5 live columns show up to 6 rows; the 7th is the "+N more" line
+    liveRows: g5 ? 7 : null,
     // shells render in their own column (grid5), the right column (grid3),
     // or the left rail (grid2/stack)
     railShellW: Math.max(12, (g5 ? colW.shells ?? 26 : mode === 'grid3' ? widths[2] : widths[0]) - 12),
-    // LOCAL paths longer than their row truncate in the MIDDLE (tail visible)
-    localValW: Math.max(16, (g5 ? widths[0] : width) - RAIL),
   };
   const S = buildSections(data, ctx);
 
@@ -401,12 +368,11 @@ export function renderSessionView(
 
   let lines;
   if (mode === 'grid5') {
-    // REMOTE+LOCAL close the rail column so live columns end at LOCAL's row;
     // gauges stack under CONTEXT at the top, airy (blank between each). Only
     // the live kinds that are actually running get a column.
     const blockFor = { shells: S.shells, workflows: S.workflows, agents: joinBlocks([S.agents, S.skills, S.failures]) };
     const liveCols = presentKinds.length ? presentKinds.map((k) => blockFor[k]) : [[]];
-    lines = zip([joinBlocks([...railBlocks, S.footer]), ...liveCols, airy(S.limits)]);
+    lines = zip([joinBlocks(railBlocks), ...liveCols, airy(S.limits)]);
   } else if (mode === 'grid3') {
     lines = zip([joinBlocks(railBlocks), joinBlocks(middleBlocks), joinBlocks(rightBlocks)]);
   } else if (mode === 'grid2') {
@@ -416,7 +382,6 @@ export function renderSessionView(
   }
 
   while (lines.length && lines[lines.length - 1] === '') lines.pop();
-  if (mode !== 'grid5' && S.footer.length) lines.push('', ...S.footer);
   let outLines = lines.map((l) => (displayWidth(l) > width ? truncateDisplay(l, width, { ascii }) : l));
   if (leadGuard && !ascii) {
     // spacer rows top and bottom so the HUD never touches the input box
@@ -428,7 +393,8 @@ export function renderSessionView(
 
 export function pickSession(sessions, { explicitId, envSessionId, cwd } = {}) {
   if (!sessions?.length) return null;
-  const findById = (id) => sessions.find((s) => s.sessionId === id || (id && s.sessionId?.startsWith(id)));
+  // exact match wins over a prefix match regardless of array order
+  const findById = (id) => sessions.find((s) => s.sessionId === id) ?? (id ? sessions.find((s) => s.sessionId?.startsWith(id)) : undefined);
   if (explicitId) return findById(explicitId) ?? null;
   if (envSessionId) {
     const hit = findById(envSessionId);

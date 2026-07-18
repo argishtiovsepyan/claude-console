@@ -144,7 +144,8 @@ function main() {
       shells,
       skills: [],
       failures: [],
-      lastActivityMs: (status.transcriptPath ? lastActivityTs(status.transcriptPath, { maxBytes: 128 * 1024 }) : null) ?? now,
+      // honest: null when unknown, never invent 'just happened' (matches cli.mjs)
+      lastActivityMs: status.transcriptPath ? lastActivityTs(status.transcriptPath, { maxBytes: 128 * 1024 }) : null,
     };
     // width margin: Claude Code's statusline area is slightly narrower than
     // COLUMNS (UI padding); rendering to the exact edge risks wrapped rows,

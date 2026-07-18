@@ -158,6 +158,12 @@ export function install({ home, log = console.log }) {
     copyFileSync(join(srcRoot, rel), dest);
     manifest.files[rel] = sha256(dest);
   }
+  // prune app files left over from a prior install that were since removed
+  // from src, so a stale module can never be imported
+  const keep = new Set(files);
+  for (const rel of listSourceFiles(p.appDir)) {
+    if (!keep.has(rel)) rmSync(join(p.appDir, rel), { force: true });
+  }
   changed.push(`installed app -> ${p.appDir} (${files.length} files)`);
 
   writeShims(p);

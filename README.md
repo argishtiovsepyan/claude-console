@@ -28,7 +28,7 @@ At full width the HUD is five columns. Each live kind — shells, workflows, age
 
 | Column | Shows |
 | --- | --- |
-| **Rail** | workspace (or worktree), branch + dirty count, model, effort, status, remote, and the working directory |
+| **Rail** | workspace (or worktree), branch + dirty count, model, effort, and status |
 | **`$` shells** | running shell commands — what each is for and how long it's run |
 | **🛸 workflows** | running orchestrations with progress `(done/total)` and age |
 | **👾 agents** | running subagents — the model each runs, its task, and age |

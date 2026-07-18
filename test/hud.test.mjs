@@ -72,9 +72,11 @@ const stack = (overrides = {}, opts = {}) =>
 
 test('rail carries every labeled row including AGENTS/WORKFLOWS/SHELLS counts', () => {
   const out = render();
-  for (const label of ['MODEL', 'EFFORT', 'STATUS', 'WORKSPACE', 'BRANCH', 'LOCAL', 'REMOTE', 'AGENTS', 'WORKFLOWS', 'SHELLS']) {
+  for (const label of ['MODEL', 'EFFORT', 'STATUS', 'WORKSPACE', 'BRANCH', 'AGENTS', 'WORKFLOWS', 'SHELLS']) {
     assert.ok(out.includes(label), `${label} missing:\n${out}`);
   }
+  // REMOTE and LOCAL were removed by design — never render
+  assert.ok(!/\bREMOTE\b/.test(out) && !/\bLOCAL\b/.test(out), out);
 });
 
 test('no section titles, no banner, no PR row', () => {
@@ -346,9 +348,9 @@ test('grid5 rail→shells gutter carries extra breathing room', () => {
   const out = renderSessionView(sessionData({ shells: [{ command: 'x', description: 'short', elapsedMs: 12000 }] }), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const first = out.split('\n')[0];
   const shells = first.indexOf('SHELLS');
-  // with an even split SHELLS would sit at rail(48)+gut(3)=51; the widened
-  // rail→shells gutter pushes it clearly further right
-  assert.ok(shells >= 55, `rail→shells gap should be widened: SHELLS at ${shells}\n${first}`);
+  // the rail→shells gutter carries extra breathing room (rail + 3 + RAIL_EXTRA),
+  // so SHELLS sits clearly further right than a plain rail + 3 gap
+  assert.ok(shells >= 46, `rail→shells gap should be widened: SHELLS at ${shells}\n${first}`);
   // a shell row still lines up under its own SHELLS head
   const shellRow = out.split('\n').find((l) => l.includes('short'));
   assert.equal(shellRow.indexOf('$'), shells, `${first}\n${shellRow}`);
@@ -423,18 +425,11 @@ test('live-column counts hug their labels and get a blank row before details', (
   assert.ok(lines[2].includes('👾') && lines[2].includes('🛸') && lines[2].includes('$'), lines[2]);
 });
 
-test('rail: blank under STATUS; REMOTE+LOCAL attached as the final rows, full path, no ellipsis', () => {
+test('the rail ends at STATUS — REMOTE and LOCAL are gone', () => {
   const out = renderSessionView(sessionData(), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
-  const lines = out.split('\n');
-  const si = lines.findIndex((l) => /^STATUS/.test(l));
-  assert.ok(si > 0, out);
-  assert.ok(!/^(REMOTE|LOCAL)/.test(lines[si + 1]), lines[si + 1]);
-  const ri = lines.findIndex((l) => /^REMOTE/.test(l));
-  assert.ok(/^REMOTE\s+acme\/my-repo/.test(lines[ri]), lines[ri]);
-  assert.ok(/^LOCAL/.test(lines[ri + 1]), `LOCAL must sit directly under REMOTE: ${lines[ri + 1]}`);
-  const last = lines[lines.length - 1].trimEnd();
-  assert.ok(/^LOCAL\s+\/Users\/dev\/Desktop\/X1\/xavior-core-1(\s|$)/.test(last), last);
-  assert.ok(!last.includes('…'), last);
+  assert.ok(/^STATUS/m.test(out), out);
+  assert.ok(!out.includes('REMOTE') && !out.includes('LOCAL'), out);
+  assert.ok(!out.includes('acme/my-repo') && !out.includes('/Users/dev'), out);
 });
 
 test('grid5 gauges: stacked under CONTEXT at the top with a breathing row between each', () => {
@@ -445,10 +440,6 @@ test('grid5 gauges: stacked under CONTEXT at the top with a breathing row betwee
   assert.ok(lines[2].includes('5-HOUR'), lines[2]);
   assert.ok(!lines[3].includes('7-DAY'), lines[3]);
   assert.ok(lines[4].includes('7-DAY'), lines[4]);
-  const ri = lines.findIndex((l) => /^REMOTE/.test(l));
-  const li = lines.findIndex((l) => /^LOCAL/.test(l));
-  assert.ok(ri > 0 && li === ri + 1, out);
-  assert.ok(!lines[ri].includes('5-HOUR') && !lines[li].includes('7-DAY'), `gauges must not sit on the footer rows:\n${lines[ri]}\n${lines[li]}`);
 });
 
 test('gauge bars are the classic full-block bars (█ filled, ░ empty)', () => {
@@ -464,16 +455,6 @@ test('workflow progress bar hugs the name (two-space gap, no fixed padding)', ()
     { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } }
   );
   assert.ok(/🛸\s+flow {2}\(3\/5\)/.test(out), out);
-});
-
-test('long LOCAL paths shrink to the root prefix + … + as much tail as fits', () => {
-  const out = renderSessionView(
-    sessionData({ cwd: '/Users/dev/Desktop/X1/xavior-core-1/.claude/worktrees/claude-terminal-hud' }),
-    { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } }
-  );
-  const local = out.split('\n').find((l) => /^LOCAL/.test(l));
-  assert.ok(/^LOCAL\s+\/Users\/…/.test(local), local);
-  assert.ok(local.includes('worktrees/claude-terminal-hud'), local);
 });
 
 test('grid5 gauge details stay intact (no clipped reset/token text)', () => {
@@ -578,4 +559,12 @@ test('pickSession prefers explicit id, then env, then cwd match, then recency', 
 test('pickSession matches sessions running in a subdirectory cwd', () => {
   const sessions = [{ sessionId: 's-a', cwd: '/repo/a', alive: true, updatedAt: 100 }];
   assert.equal(pickSession(sessions, { cwd: '/repo/a/packages/web' }).sessionId, 's-a');
+});
+
+test('--session: an exact id wins over a prefix match earlier in the list', () => {
+  const sessions = [
+    { sessionId: 'abcdef00-1111', cwd: '/x', alive: true, updatedAt: 1 }, // prefix of the query
+    { sessionId: 'abc', cwd: '/y', alive: true, updatedAt: 2 }, // exact
+  ];
+  assert.equal(pickSession(sessions, { explicitId: 'abc' }).sessionId, 'abc');
 });

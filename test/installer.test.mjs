@@ -45,6 +45,16 @@ test('rollback restores only statusLine, preserving settings the user added sinc
   assert.equal(after.model, 'claude-fable-5[1m]', 'other keys untouched');
 });
 
+test('install prunes app files left over from a prior install', () => {
+  const home = makeHome();
+  run(['install'], home);
+  const stale = join(home, '.claude', 'hud', 'app', 'lib', 'obsolete.mjs');
+  writeFileSync(stale, '// removed from src since\n');
+  assert.ok(existsSync(stale));
+  run(['install'], home); // reinstall
+  assert.ok(!existsSync(stale), 'stale app module should be pruned on install');
+});
+
 test('non-purge uninstall clears the recorded original so a later install re-baselines', () => {
   const home = makeHome();
   run(['install'], home);
