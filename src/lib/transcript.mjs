@@ -275,7 +275,14 @@ export function listAgents(
         startedMs: e.birthtimeMs || null,
       };
     })
-    .sort((a, b) => b.lastActivityMs - a.lastActivityMs);
+    // STABLE display order: oldest launch first (matching shells/workflows),
+    // agentId tiebreak. Never sort by lastActivityMs here — mtime bumps on
+    // every transcript write, which made rows shuffle on each render.
+    .sort(
+      (a, b) =>
+        (a.startedMs || a.lastActivityMs) - (b.startedMs || b.lastActivityMs) ||
+        String(a.agentId).localeCompare(String(b.agentId)),
+    );
 }
 
 export function listWorkflows(sessionDir, { now = Date.now(), activeWithinMs = 120_000 } = {}) {

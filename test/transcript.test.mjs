@@ -253,6 +253,24 @@ test('listAgents merges meta, parent events and liveness', () => {
   assert.equal(byId.w1.isWorkflowAgent, true);
 });
 
+test('listAgents order is stable by start time — a burst of writes must not reorder rows', () => {
+  const dir = mkdirSyncTemp();
+  const sessionDir = join(dir, 'sess');
+  const subagents = join(sessionDir, 'subagents');
+  mkdirSync(subagents, { recursive: true });
+  const line = JSON.stringify({ type: 'assistant', timestamp: iso(1), message: { role: 'assistant', content: [] } }) + '\n';
+  const aFirst = join(subagents, 'agent-a-first.jsonl');
+  const bSecond = join(subagents, 'agent-b-second.jsonl');
+  writeFileSync(aFirst, line);
+  writeFileSync(bSecond, line);
+  // b-second just wrote (newest mtime); a-first has been quiet for a minute.
+  // Sorting by activity would flip them on every write — display order must not.
+  const quiet = (Date.now() - 60_000) / 1000;
+  utimesSync(aFirst, quiet, quiet);
+  const ids = listAgents(sessionDir, { now: Date.now() }).map((a) => a.agentId);
+  assert.deepEqual(ids, ['a-first', 'b-second']);
+});
+
 test('an async-launched agent that finished long ago is idle, not running (recency beats launch)', () => {
   const dir = mkdirSyncTemp();
   // parent: launch a1 async, NO completion record ever written for it
