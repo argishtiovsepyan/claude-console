@@ -274,9 +274,9 @@ test('grid3: middle = counts + agent/workflow rows; shells under gauges on the r
   assert.ok(!/^\$/m.test(out), 'shell rows belong to the right column');
 });
 
-test('STATUS value is colored: busy green, idle yellow', () => {
+test('STATUS value is colored: busy blue, idle yellow', () => {
   const busy = renderSessionView(sessionData({ registryStatus: 'busy' }), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
-  assert.ok(/\x1b\[38;5;71mbusy/.test(busy), 'busy not green');
+  assert.ok(/\x1b\[0;36mbusy/.test(busy), 'busy not blue');
   const idle = renderSessionView(sessionData({ registryStatus: 'idle' }), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
   assert.ok(/\x1b\[38;5;220midle/.test(idle), 'idle not yellow');
 });

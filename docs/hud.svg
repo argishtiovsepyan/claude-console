@@ -17,7 +17,7 @@
 <text x="1036.8" y="70.5" fill="#8fd653" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">4 running</text>
 <text x="1294.8" y="70.5" fill="#74857a" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">CONTEXT</text>
 <text x="1406.6" y="70.5" fill="#e6c14d" textLength="68.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">█████░░░</text>
-<text x="1475.4" y="70.5" fill="#d7d7af" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 57%</text>
+<text x="1475.4" y="70.5" fill="#74857a" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 57%</text>
 <text x="1527.0" y="70.5" fill="#74857a" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">570k/1M</text>
 <text x="22.0" y="91.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKSPACE</text>
 <text x="133.8" y="91.5" fill="#e6c14d" textLength="137.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">primary terminal</text>
@@ -34,7 +34,7 @@
 <text x="1200.2" y="112.5" fill="#74857a" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">4s</text>
 <text x="1294.8" y="112.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">5-HOUR</text>
 <text x="1406.6" y="112.5" fill="#8fd653" textLength="68.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">████░░░░</text>
-<text x="1475.4" y="112.5" fill="#d7d7af" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 55%</text>
+<text x="1475.4" y="112.5" fill="#74857a" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 55%</text>
 <text x="1527.0" y="112.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→20:40</text>
 <text x="22.0" y="133.5" fill="#74857a" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">MODEL</text>
 <text x="133.8" y="133.5" fill="#cbd8ce" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Fable 5</text>
@@ -60,10 +60,10 @@
 <text x="1200.2" y="154.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">16s</text>
 <text x="1294.8" y="154.5" fill="#74857a" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">7-DAY</text>
 <text x="1406.6" y="154.5" fill="#8fd653" textLength="68.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">█░░░░░░░</text>
-<text x="1475.4" y="154.5" fill="#d7d7af" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 17%</text>
+<text x="1475.4" y="154.5" fill="#74857a" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 17%</text>
 <text x="1527.0" y="154.5" fill="#74857a" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→Sat</text>
 <text x="22.0" y="175.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">STATUS</text>
-<text x="133.8" y="175.5" fill="#5faf5f" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">busy</text>
+<text x="133.8" y="175.5" fill="#5cc8c2" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">busy</text>
 <text x="950.8" y="175.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
 <text x="985.2" y="175.5" fill="#5cc8c2" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">sonnet</text>
 <text x="1054.0" y="175.5" fill="#cbd8ce" textLength="86.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">docs audit</text>

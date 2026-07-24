@@ -29,7 +29,7 @@ const C = {
   ultra: '38;5;141', // Claude Code's UI purple (xterm 141 ≈ #af87ff)
   run: '38;5;154',
   fail: '38;5;196',
-  pct: '38;5;187', // gauge % is a soft off-white, readable and not the bar's level color
+  pct: '38;5;245', // gauge % uses the same muted slate-gray as the times/context (C.dim tone)
 };
 
 // precise=true keeps the seconds ticking inside the minute range ("1m 23s")
@@ -96,9 +96,9 @@ function buildSections(data, ctx) {
   if (!data.alive) {
     ident.push(row('STATUS', paint(C.fail, `STALE ${icons.dash} claude process gone${data.pid ? ` (pid ${data.pid})` : ''}`)));
   } else {
-    // the fastest-changing row gets state colors: busy green, idle yellow
+    // the fastest-changing row gets state colors: busy blue, idle yellow
     const st = data.registryStatus || 'alive';
-    const stColor = st === 'busy' ? '38;5;71' : st === 'idle' ? C.mid : C.dim;
+    const stColor = st === 'busy' ? '0;36' : st === 'idle' ? C.mid : C.dim;
     ident.push(row('STATUS', paint(stColor, st)));
   }
   S.ident = ident;
