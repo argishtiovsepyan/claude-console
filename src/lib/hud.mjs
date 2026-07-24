@@ -3,7 +3,7 @@
 //
 // Default layout is five columns (≥168 cols) — every live kind owns a lane:
 //   rail | SHELLS | WORKFLOWS | AGENTS | gauges   (user-locked order)
-// The rail is BRANCH/WORKSPACE + MODEL/EFFORT/STATUS only (no REMOTE/LOCAL);
+// The rail is WORKSPACE/BRANCH + MODEL/EFFORT/STATUS only (no REMOTE/LOCAL);
 // each live column shows up to 6 rows, overflow folds into "+N more".
 // 124–167 folds to three columns (agents+workflows share the middle, shells
 // under the gauges); 84–123 folds to two (gauges join the left rail);
@@ -60,16 +60,7 @@ function buildSections(data, ctx) {
   // ---------- location group (always on top, own group) ----------
   const loc = [];
   if (show.where) {
-    // BRANCH on top, then WORKSPACE = primary terminal | worktree
-    loc.push(
-      row(
-        'BRANCH',
-        data.branch
-          ? paint('0;36', data.branch) +
-              (Number.isFinite(data.dirtyCount) && data.dirtyCount > 0 ? ` ${paint(C.mid, `+${data.dirtyCount}`)}` : '')
-          : paint(C.dim, 'unknown')
-      )
-    );
+    // key/value like every other rail row: WORKSPACE = primary terminal | worktree
     if (data.isWorktree) {
       loc.push(
         row(
@@ -80,6 +71,15 @@ function buildSections(data, ctx) {
     } else {
       loc.push(row('WORKSPACE', paint('38;5;220', 'primary terminal')));
     }
+    loc.push(
+      row(
+        'BRANCH',
+        data.branch
+          ? paint('0;36', data.branch) +
+              (Number.isFinite(data.dirtyCount) && data.dirtyCount > 0 ? ` ${paint(C.mid, `+${data.dirtyCount}`)}` : '')
+          : paint(C.dim, 'unknown')
+      )
+    );
   }
   S.loc = loc;
 
@@ -97,7 +97,7 @@ function buildSections(data, ctx) {
   } else {
     // the fastest-changing row gets state colors: busy green, idle yellow
     const st = data.registryStatus || 'alive';
-    const stColor = st === 'busy' ? '38;5;71' : st === 'idle' ? C.mid : C.dim;
+    const stColor = st === 'busy' ? '0;36' : st === 'idle' ? C.mid : C.dim;
     ident.push(row('STATUS', paint(stColor, st)));
   }
   S.ident = ident;

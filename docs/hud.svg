@@ -6,8 +6,8 @@
   <circle cx="40" cy="20" r="6" fill="#febc2e"/>
   <circle cx="60" cy="20" r="6" fill="#28c840"/>
   <text x="805" y="24" fill="#74857a" font-size="12" text-anchor="middle">claude · claude-console — zsh</text>
-<text x="22.0" y="91.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKSPACE</text>
-<text x="133.8" y="91.5" fill="#e6c14d" textLength="137.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">primary terminal</text>
+<text x="22.0" y="70.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKSPACE</text>
+<text x="133.8" y="70.5" fill="#e6c14d" textLength="137.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">primary terminal</text>
 <text x="426.2" y="70.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">SHELLS</text>
 <text x="512.2" y="70.5" fill="#8fd653" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">3 running</text>
 <text x="684.2" y="70.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKFLOWS</text>
@@ -17,9 +17,9 @@
 <text x="1294.8" y="70.5" fill="#74857a" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">CONTEXT</text>
 <text x="1406.6" y="70.5" fill="#e6c14d" textLength="103.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">█████░░░ 57%</text>
 <text x="1527.0" y="70.5" fill="#74857a" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">570k/1M</text>
-<text x="22.0" y="70.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">BRANCH</text>
-<text x="133.8" y="70.5" fill="#5cc8c2" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">main</text>
-<text x="176.8" y="70.5" fill="#e6c14d" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">+3</text>
+<text x="22.0" y="91.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">BRANCH</text>
+<text x="133.8" y="91.5" fill="#5cc8c2" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">main</text>
+<text x="176.8" y="91.5" fill="#e6c14d" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">+3</text>
 <text x="426.2" y="112.5" fill="#8fd653" textLength="8.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
 <text x="452.0" y="112.5" fill="#cbd8ce" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">run tests</text>
 <text x="555.2" y="112.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">12s</text>
@@ -60,7 +60,7 @@
 <text x="1406.6" y="154.5" fill="#8fd653" textLength="103.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">█░░░░░░░ 17%</text>
 <text x="1527.0" y="154.5" fill="#74857a" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→Sat</text>
 <text x="22.0" y="175.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">STATUS</text>
-<text x="133.8" y="175.5" fill="#5faf5f" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">busy</text>
+<text x="133.8" y="175.5" fill="#5cc8c2" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">busy</text>
 <text x="950.8" y="175.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
 <text x="985.2" y="175.5" fill="#5cc8c2" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">sonnet</text>
 <text x="1054.0" y="175.5" fill="#cbd8ce" textLength="86.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">docs audit</text>

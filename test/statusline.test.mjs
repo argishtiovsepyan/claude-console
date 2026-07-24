@@ -47,7 +47,7 @@ test('default statusline renders the FULL session HUD (final design) and exits 0
   const { status, stdout } = run(SAMPLE);
   assert.equal(status, 0);
   const plain = stripAnsi(stdout);
-  assert.ok(/BRANCH.*CONTEXT/.test(plain.split('\n')[1]), plain); // grid3: gauges rightmost (line 0 is the spacer)
+  assert.ok(/WORKSPACE.*CONTEXT/.test(plain.split('\n')[1]), plain); // grid3: gauges rightmost (line 0 is the spacer)
   assert.ok(!/0 running/.test(plain), plain); // kinds with nothing running are hidden
   assert.ok(/MODEL\s+Fable 5/.test(plain), plain);
   assert.ok(/EFFORT\s+xhigh/.test(plain), plain);
