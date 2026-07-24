@@ -80,7 +80,7 @@ test('default view renders the deep session view from fixture sources', () => {
   assert.equal(res.status, 0, res.stderr);
   assert.ok(!res.stdout.includes('WHAT'), res.stdout);
   assert.ok(/MODEL\s+Fable 5/.test(res.stdout), res.stdout);
-  assert.ok(res.stdout.includes('main terminal'), res.stdout);
+  assert.ok(res.stdout.includes('primary terminal'), res.stdout);
   assert.ok(res.stdout.includes('develop'), res.stdout);
   // skills + failures are hidden by default (user preference; config-toggleable)
   assert.ok(!res.stdout.includes('SKILLS USED'), res.stdout);

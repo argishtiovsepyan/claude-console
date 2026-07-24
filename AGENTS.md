@@ -55,7 +55,7 @@ and commands.** This file holds agent-facing rules only.
   (genuine user records only) overrides the stdin's base 'xhigh' when
   ultracode is active; ultracode paints Claude-purple (38;5;141). Fixed
   label rail; NO title banner; NO horizontal rule lines; NO PR row; WHERE
-  labels are `WORKSPACE` (golden `main terminal` | orange `worktree ·` +
+  labels are `WORKSPACE` (golden `primary terminal` | orange `worktree ·` +
   name) / `BRANCH` / `LOCAL` / `REMOTE`; branch dirt is compact
   statusline-style (`develop +4`, never "uncommitted files");
   skills/failures sections default OFF; no dollar cost and no duration in

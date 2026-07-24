@@ -51,7 +51,7 @@ test('default statusline renders the FULL session HUD (final design) and exits 0
   assert.ok(!/0 running/.test(plain), plain); // kinds with nothing running are hidden
   assert.ok(/MODEL\s+Fable 5/.test(plain), plain);
   assert.ok(/EFFORT\s+xhigh/.test(plain), plain);
-  assert.ok(plain.includes('main terminal') || plain.includes('worktree'), plain);
+  assert.ok(plain.includes('primary terminal') || plain.includes('worktree'), plain);
   assert.ok(/5-HOUR/.test(plain), plain);
   for (const row of stdout.replace(/\n$/, '').split('\n')) {
     assert.ok(displayWidth(row) <= 150, `${displayWidth(row)}: ${stripAnsi(row)}`);

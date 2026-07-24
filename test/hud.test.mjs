@@ -91,7 +91,7 @@ test('no section titles, no banner, no PR row', () => {
 
 test('location group on top with a blank line before the rest', () => {
   const lines = stack().split('\n');
-  assert.ok(/^WORKSPACE\s+main terminal/.test(lines[0]), lines[0]);
+  assert.ok(/^WORKSPACE\s+primary terminal/.test(lines[0]), lines[0]);
   assert.ok(/^BRANCH\s+develop \+3/.test(lines[1]), lines[1]);
   assert.equal(lines[2], '', lines.slice(0, 4).join('\n'));
   assert.ok(/^MODEL/.test(lines[3]), lines[3]);
@@ -320,9 +320,9 @@ test('session name and skills never leak secrets', () => {
 
 // ---------- layout ----------
 
-test('workspace colors: golden main terminal; orange worktree prefix, white name', () => {
+test('workspace colors: golden primary terminal; orange worktree prefix, white name', () => {
   const main = renderSessionView(sessionData(), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
-  assert.ok(/\x1b\[38;5;220mmain terminal/.test(main), 'main terminal not golden');
+  assert.ok(/\x1b\[38;5;220mprimary terminal/.test(main), 'primary terminal not golden');
   const wt = renderSessionView(sessionData({ isWorktree: true, worktreeName: 'gmail-native-tabs' }), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
   assert.ok(/\x1b\[38;5;208mworktree/.test(wt), 'worktree prefix not orange');
   assert.ok(/\x1b\[0;37mgmail-native-tabs/.test(wt), 'worktree name not white');

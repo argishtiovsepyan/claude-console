@@ -60,7 +60,7 @@ function buildSections(data, ctx) {
   // ---------- location group (always on top, own group) ----------
   const loc = [];
   if (show.where) {
-    // key/value like every other rail row: WORKSPACE = main terminal | worktree
+    // key/value like every other rail row: WORKSPACE = primary terminal | worktree
     if (data.isWorktree) {
       loc.push(
         row(
@@ -69,7 +69,7 @@ function buildSections(data, ctx) {
         )
       );
     } else {
-      loc.push(row('WORKSPACE', paint('38;5;220', 'main terminal')));
+      loc.push(row('WORKSPACE', paint('38;5;220', 'primary terminal')));
     }
     loc.push(
       row(

@@ -7,7 +7,7 @@
   <circle cx="60" cy="20" r="6" fill="#28c840"/>
   <text x="805" y="24" fill="#74857a" font-size="12" text-anchor="middle">claude · claude-console — zsh</text>
 <text x="22.0" y="70.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKSPACE</text>
-<text x="133.8" y="70.5" fill="#e6c14d" textLength="111.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">main terminal</text>
+<text x="133.8" y="70.5" fill="#e6c14d" textLength="137.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">primary terminal</text>
 <text x="426.2" y="70.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">SHELLS</text>
 <text x="512.2" y="70.5" fill="#8fd653" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">3 running</text>
 <text x="684.2" y="70.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKFLOWS</text>
