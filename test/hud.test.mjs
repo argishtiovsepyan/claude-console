@@ -91,13 +91,13 @@ test('no section titles, no banner, no PR row', () => {
 
 test('location group on top with a blank line before the rest', () => {
   const lines = stack().split('\n');
-  assert.ok(/^WORKSPACE\s+primary terminal/.test(lines[0]), lines[0]);
-  assert.ok(/^BRANCH\s+develop \+3/.test(lines[1]), lines[1]);
+  assert.ok(/^BRANCH\s+develop \+3/.test(lines[0]), lines[0]);
+  assert.ok(/^WORKSPACE\s+primary terminal/.test(lines[1]), lines[1]);
   assert.equal(lines[2], '', lines.slice(0, 4).join('\n'));
   assert.ok(/^MODEL/.test(lines[3]), lines[3]);
   assert.ok(/^EFFORT/.test(lines[4]), lines[4]);
   const wt = stack({ isWorktree: true, worktreeName: 'gmail-native-tabs' }).split('\n');
-  assert.ok(/^WORKSPACE\s+worktree · gmail-native-tabs/.test(wt[0]), wt[0]);
+  assert.ok(/^WORKSPACE\s+worktree · gmail-native-tabs/.test(wt[1]), wt[1]);
 });
 
 test('STATUS is just busy/idle — no last-activity text', () => {
@@ -269,14 +269,14 @@ test('shells sit beneath the gauges (after 7-DAY)', () => {
 test('grid3: middle = counts + agent/workflow rows; shells under gauges on the right', () => {
   const out = renderSessionView(sessionData(), { width: 150, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const first = out.split('\n')[0];
-  assert.ok(/WORKSPACE.*AGENTS.*CONTEXT/.test(first), first);
+  assert.ok(/BRANCH.*AGENTS.*CONTEXT/.test(first), first);
   assert.ok(!/^AGENTS/m.test(out), 'AGENTS count belongs to the middle column');
   assert.ok(!/^\$/m.test(out), 'shell rows belong to the right column');
 });
 
 test('STATUS value is colored: busy green, idle yellow', () => {
   const busy = renderSessionView(sessionData({ registryStatus: 'busy' }), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
-  assert.ok(/\x1b\[0;36mbusy/.test(busy), 'busy not cyan');
+  assert.ok(/\x1b\[38;5;71mbusy/.test(busy), 'busy not green');
   const idle = renderSessionView(sessionData({ registryStatus: 'idle' }), { width: 100, color: true, now: NOW, timeZone: 'UTC' });
   assert.ok(/\x1b\[38;5;220midle/.test(idle), 'idle not yellow');
 });
@@ -332,7 +332,7 @@ test('grid5 drops columns for kinds with nothing running; gauges stay rightmost'
   // only shells running here → rail | SHELLS | gauges
   const out = renderSessionView(sessionData({ agents: [], workflows: [] }), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const first = out.split('\n')[0];
-  assert.ok(/WORKSPACE.*SHELLS\s+1 running.*CONTEXT/.test(first), first);
+  assert.ok(/BRANCH.*SHELLS\s+1 running.*CONTEXT/.test(first), first);
   assert.ok(!/AGENTS/.test(first), first);
   assert.ok(!/WORKFLOWS/.test(first), first);
 });
@@ -340,7 +340,7 @@ test('grid5 drops columns for kinds with nothing running; gauges stay rightmost'
 test('grid5 at >=168: shells, workflows, agents each get their own column, gauges rightmost', () => {
   const out = renderSessionView(sessionData(), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const first = out.split('\n')[0];
-  assert.ok(/WORKSPACE.*SHELLS.*WORKFLOWS.*AGENTS.*CONTEXT/.test(first), first);
+  assert.ok(/BRANCH.*SHELLS.*WORKFLOWS.*AGENTS.*CONTEXT/.test(first), first);
   for (const line of out.split('\n')) assert.ok(displayWidth(line) <= 186, `${displayWidth(line)}: ${line}`);
 });
 
@@ -382,7 +382,7 @@ test('grid5 rows land under their own column heads', () => {
 test('grid5 with nothing running collapses to rail + gauges (no live columns)', () => {
   const out = renderSessionView(sessionData({ agents: [], workflows: [], shells: [] }), { width: 186, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const first = out.split('\n')[0];
-  assert.ok(/WORKSPACE.*CONTEXT/.test(first), first);
+  assert.ok(/BRANCH.*CONTEXT/.test(first), first);
   assert.ok(!/SHELLS|WORKFLOWS|AGENTS|running/.test(out), out);
   for (const line of out.split('\n')) assert.ok(displayWidth(line) <= 186, `${displayWidth(line)}: ${line}`);
 });
@@ -466,7 +466,7 @@ test('grid5 gauge details stay intact (no clipped reset/token text)', () => {
 test('124–167 keeps grid3: workflows and shells do not head their own columns', () => {
   const out = renderSessionView(sessionData(), { width: 160, color: false, now: NOW, timeZone: 'UTC', sections: { skills: false, failures: false } });
   const first = out.split('\n')[0];
-  assert.ok(/WORKSPACE.*AGENTS.*CONTEXT/.test(first), first);
+  assert.ok(/BRANCH.*AGENTS.*CONTEXT/.test(first), first);
   assert.ok(!first.includes('WORKFLOWS'), first);
   assert.ok(!first.includes('SHELLS'), first);
 });
@@ -474,7 +474,7 @@ test('124–167 keeps grid3: workflows and shells do not head their own columns'
 test('grid3 is the default at >=124: gauges are the rightmost column', () => {
   const out = renderSessionView(sessionData(), { width: 150, color: false, now: NOW, timeZone: 'UTC' });
   const first = out.split('\n')[0];
-  assert.ok(/WORKSPACE.*CONTEXT/.test(first), first);
+  assert.ok(/BRANCH.*CONTEXT/.test(first), first);
   assert.ok(!/^CONTEXT/m.test(out), 'gauges must not be in the left rail at grid3');
   for (const line of out.split('\n')) assert.ok(displayWidth(line) <= 150, `${displayWidth(line)}: ${line}`);
 });
@@ -495,7 +495,7 @@ test('gauges always breathe (blank row between bars)', () => {
 
 test('narrow widths stack; every width stays in bounds', () => {
   const narrow = renderSessionView(sessionData(), { width: 70, color: false, now: NOW, timeZone: 'UTC' });
-  assert.ok(!/WORKSPACE.*MODEL/.test(narrow.split('\n')[0]), narrow);
+  assert.ok(!/BRANCH.*MODEL/.test(narrow.split('\n')[0]), narrow);
   for (const width of [60, 90, 120, 150, 190]) {
     const out = renderSessionView(sessionData(), { width, color: false, now: NOW, timeZone: 'UTC' });
     for (const line of out.split('\n')) assert.ok(displayWidth(line) <= width, `${width}: ${line}`);
