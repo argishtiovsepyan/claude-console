@@ -3,7 +3,7 @@
 //
 // Default layout is five columns (≥168 cols) — every live kind owns a lane:
 //   rail | SHELLS | WORKFLOWS | AGENTS | gauges   (user-locked order)
-// The rail is WORKSPACE/BRANCH + MODEL/EFFORT/STATUS only (no REMOTE/LOCAL);
+// The rail is BRANCH/WORKSPACE + MODEL/EFFORT/STATUS only (no REMOTE/LOCAL);
 // each live column shows up to 6 rows, overflow folds into "+N more".
 // 124–167 folds to three columns (agents+workflows share the middle, shells
 // under the gauges); 84–123 folds to two (gauges join the left rail);
@@ -29,7 +29,7 @@ const C = {
   ultra: '38;5;141', // Claude Code's UI purple (xterm 141 ≈ #af87ff)
   run: '38;5;154',
   fail: '38;5;196',
-  pct: '38;5;253', // gauge % reads bright/neutral, not the bar's level color (readability)
+  pct: '38;5;187', // gauge % is a soft off-white, readable and not the bar's level color
 };
 
 // precise=true keeps the seconds ticking inside the minute range ("1m 23s")
@@ -61,7 +61,16 @@ function buildSections(data, ctx) {
   // ---------- location group (always on top, own group) ----------
   const loc = [];
   if (show.where) {
-    // key/value like every other rail row: WORKSPACE = primary terminal | worktree
+    // BRANCH on top, then WORKSPACE = primary terminal | worktree
+    loc.push(
+      row(
+        'BRANCH',
+        data.branch
+          ? paint('0;36', data.branch) +
+              (Number.isFinite(data.dirtyCount) && data.dirtyCount > 0 ? ` ${paint(C.mid, `+${data.dirtyCount}`)}` : '')
+          : paint(C.dim, 'unknown')
+      )
+    );
     if (data.isWorktree) {
       loc.push(
         row(
@@ -72,15 +81,6 @@ function buildSections(data, ctx) {
     } else {
       loc.push(row('WORKSPACE', paint('38;5;220', 'primary terminal')));
     }
-    loc.push(
-      row(
-        'BRANCH',
-        data.branch
-          ? paint('0;36', data.branch) +
-              (Number.isFinite(data.dirtyCount) && data.dirtyCount > 0 ? ` ${paint(C.mid, `+${data.dirtyCount}`)}` : '')
-          : paint(C.dim, 'unknown')
-      )
-    );
   }
   S.loc = loc;
 
@@ -98,7 +98,7 @@ function buildSections(data, ctx) {
   } else {
     // the fastest-changing row gets state colors: busy green, idle yellow
     const st = data.registryStatus || 'alive';
-    const stColor = st === 'busy' ? '0;36' : st === 'idle' ? C.mid : C.dim;
+    const stColor = st === 'busy' ? '38;5;71' : st === 'idle' ? C.mid : C.dim;
     ident.push(row('STATUS', paint(stColor, st)));
   }
   S.ident = ident;
