@@ -97,7 +97,7 @@ The statusline hot path is built to never block: it exits in well under a second
 ## Development
 
 ```bash
-npm test    # 214 tests · node:test · zero dependencies
+npm test    # 234 tests · node:test · zero dependencies
 ```
 
 Plain Node ESM under `src/` — no build step, no packages. MIT licensed.
