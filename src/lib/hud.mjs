@@ -29,7 +29,7 @@ const C = {
   ultra: '38;5;141', // Claude Code's UI purple (xterm 141 ≈ #af87ff)
   run: '38;5;154',
   fail: '38;5;196',
-  pct: '38;5;111', // gauge % is a bright blue (xterm 111 ≈ #87afff), distinct from the gray times/context
+  pct: '38;5;110', // secondary numbers (gauge %, times, resets, context) — medium blue (xterm 110 ≈ #87afd7)
 };
 
 // precise=true keeps the seconds ticking inside the minute range ("1m 23s")
