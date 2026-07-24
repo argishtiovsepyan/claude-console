@@ -29,6 +29,7 @@ const C = {
   ultra: '38;5;141', // Claude Code's UI purple (xterm 141 ≈ #af87ff)
   run: '38;5;154',
   fail: '38;5;196',
+  pct: '38;5;253', // gauge % reads bright/neutral, not the bar's level color (readability)
 };
 
 // precise=true keeps the seconds ticking inside the minute range ("1m 23s")
@@ -202,7 +203,9 @@ function buildSections(data, ctx) {
       return;
     }
     const lvl = C[barLevel(pct, thresholds)];
-    const bar = paint(lvl, `${renderBar(pct, gaugeCells, { ascii })} ${Math.round(pct)}%`);
+    // the bar carries the level color; the % stays a bright neutral so it's
+    // legible at every level (green/gold/red bars can wash the digits out)
+    const bar = paint(lvl, renderBar(pct, gaugeCells, { ascii })) + paint(C.pct, ` ${Math.round(pct)}%`);
     limits.push(row(label, `${bar}${detail ? `  ${paint(C.dim, detail)}` : ''}`));
   };
   gaugeRow(
