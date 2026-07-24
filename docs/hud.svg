@@ -17,55 +17,55 @@
 <text x="1036.8" y="70.5" fill="#8fd653" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">4 running</text>
 <text x="1294.8" y="70.5" fill="#74857a" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">CONTEXT</text>
 <text x="1406.6" y="70.5" fill="#e6c14d" textLength="68.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">█████░░░</text>
-<text x="1475.4" y="70.5" fill="#8787af" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 57%</text>
-<text x="1527.0" y="70.5" fill="#74857a" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">570k/1M</text>
+<text x="1475.4" y="70.5" fill="#87afff" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 57%</text>
+<text x="1527.0" y="70.5" fill="#87afff" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">570k/1M</text>
 <text x="22.0" y="91.5" fill="#74857a" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">WORKSPACE</text>
 <text x="133.8" y="91.5" fill="#e6c14d" textLength="137.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">primary terminal</text>
 <text x="426.2" y="112.5" fill="#8fd653" textLength="8.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
 <text x="452.0" y="112.5" fill="#cbd8ce" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">run tests</text>
-<text x="555.2" y="112.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">12s</text>
+<text x="555.2" y="112.5" fill="#87afff" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">12s</text>
 <text x="684.2" y="112.5" fill="#5cc8c2" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">🛸</text>
 <text x="718.6" y="112.5" fill="#cbd8ce" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">review</text>
 <text x="787.4" y="112.5" fill="#af87ff" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">(3/5)</text>
-<text x="847.6" y="112.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">3m 40s</text>
+<text x="847.6" y="112.5" fill="#87afff" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">3m 40s</text>
 <text x="950.8" y="112.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
 <text x="985.2" y="112.5" fill="#5cc8c2" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">sonnet</text>
 <text x="1054.0" y="112.5" fill="#cbd8ce" textLength="129.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">security review</text>
-<text x="1200.2" y="112.5" fill="#74857a" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">4s</text>
+<text x="1200.2" y="112.5" fill="#87afff" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">4s</text>
 <text x="1294.8" y="112.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">5-HOUR</text>
 <text x="1406.6" y="112.5" fill="#8fd653" textLength="68.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">████░░░░</text>
-<text x="1475.4" y="112.5" fill="#8787af" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 55%</text>
-<text x="1527.0" y="112.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→20:40</text>
+<text x="1475.4" y="112.5" fill="#87afff" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 55%</text>
+<text x="1527.0" y="112.5" fill="#87afff" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→20:40</text>
 <text x="22.0" y="133.5" fill="#74857a" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">MODEL</text>
 <text x="133.8" y="133.5" fill="#cbd8ce" textLength="60.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Fable 5</text>
 <text x="426.2" y="133.5" fill="#8fd653" textLength="8.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
 <text x="452.0" y="133.5" fill="#cbd8ce" textLength="86.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">dev server</text>
-<text x="555.2" y="133.5" fill="#74857a" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">2m 5s</text>
+<text x="555.2" y="133.5" fill="#87afff" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">2m 5s</text>
 <text x="684.2" y="133.5" fill="#5cc8c2" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">🛸</text>
 <text x="718.6" y="133.5" fill="#cbd8ce" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">test-plan</text>
 <text x="813.2" y="133.5" fill="#af87ff" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">(1/4)</text>
-<text x="873.4" y="133.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">1m 35s</text>
+<text x="873.4" y="133.5" fill="#87afff" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">1m 35s</text>
 <text x="950.8" y="133.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
 <text x="985.2" y="133.5" fill="#5cc8c2" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">sonnet</text>
 <text x="1054.0" y="133.5" fill="#cbd8ce" textLength="94.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">code review</text>
-<text x="1200.2" y="133.5" fill="#74857a" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">9s</text>
+<text x="1200.2" y="133.5" fill="#87afff" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">9s</text>
 <text x="22.0" y="154.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">EFFORT</text>
 <text x="133.8" y="154.5" fill="#af87ff" textLength="77.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">ultracode</text>
 <text x="426.2" y="154.5" fill="#8fd653" textLength="8.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
 <text x="452.0" y="154.5" fill="#cbd8ce" textLength="68.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">watch CI</text>
-<text x="555.2" y="154.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">47s</text>
+<text x="555.2" y="154.5" fill="#87afff" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">47s</text>
 <text x="950.8" y="154.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
 <text x="985.2" y="154.5" fill="#5cc8c2" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">haiku</text>
 <text x="1054.0" y="154.5" fill="#cbd8ce" textLength="129.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">standards sweep</text>
-<text x="1200.2" y="154.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">16s</text>
+<text x="1200.2" y="154.5" fill="#87afff" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">16s</text>
 <text x="1294.8" y="154.5" fill="#74857a" textLength="43.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">7-DAY</text>
 <text x="1406.6" y="154.5" fill="#8fd653" textLength="68.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">█░░░░░░░</text>
-<text x="1475.4" y="154.5" fill="#8787af" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 17%</text>
-<text x="1527.0" y="154.5" fill="#74857a" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→Sat</text>
+<text x="1475.4" y="154.5" fill="#87afff" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> 17%</text>
+<text x="1527.0" y="154.5" fill="#87afff" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">→Sat</text>
 <text x="22.0" y="175.5" fill="#74857a" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">STATUS</text>
 <text x="133.8" y="175.5" fill="#5cc8c2" textLength="34.4" lengthAdjust="spacingAndGlyphs" xml:space="preserve">busy</text>
 <text x="950.8" y="175.5" fill="#8fd653" textLength="17.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">👾</text>
 <text x="985.2" y="175.5" fill="#5cc8c2" textLength="51.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">sonnet</text>
 <text x="1054.0" y="175.5" fill="#cbd8ce" textLength="86.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">docs audit</text>
-<text x="1200.2" y="175.5" fill="#74857a" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">25s</text>
+<text x="1200.2" y="175.5" fill="#87afff" textLength="25.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">25s</text>
 </svg>

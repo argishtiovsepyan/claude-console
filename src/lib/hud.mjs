@@ -29,7 +29,7 @@ const C = {
   ultra: '38;5;141', // Claude Code's UI purple (xterm 141 ≈ #af87ff)
   run: '38;5;154',
   fail: '38;5;196',
-  pct: '38;5;103', // gauge % is slate-blue (xterm 103 ≈ #8787af), distinct from the gray times/context
+  pct: '38;5;111', // gauge % is a bright blue (xterm 111 ≈ #87afff), distinct from the gray times/context
 };
 
 // precise=true keeps the seconds ticking inside the minute range ("1m 23s")
@@ -138,7 +138,7 @@ function buildSections(data, ctx) {
       `${paint(C.run, icons.run)}  ` +
         padEndDisplay(paint(C.section, s.model), modelW + 2) +
         padEndDisplay(paint(C.value, s.descText), descW + 2) +
-        paint(C.dim, Number.isFinite(startMs) ? formatAge(now - startMs, { precise: true }) : '')
+        paint(C.pct, Number.isFinite(startMs) ? formatAge(now - startMs, { precise: true }) : '')
     );
   }
   if (running.length > aCap) agentLines.push(paint(C.dim, `   +${running.length - aCap} more`));
@@ -163,7 +163,7 @@ function buildSections(data, ctx) {
       `${paint(C.section, icons.wf)}  ` +
         paint(C.value, truncateDisplay(redact(w.workflowName || 'workflow'), ctx.wfNameW, { ascii })) +
         (prog ? `  ${prog}` : '') +
-        (Number.isFinite(w.startTime) ? `  ${paint(C.dim, formatAge(now - w.startTime, { precise: true }))}` : '')
+        (Number.isFinite(w.startTime) ? `  ${paint(C.pct, formatAge(now - w.startTime, { precise: true }))}` : '')
     );
   }
   if (wfs.length > wCap) wfLines.push(paint(C.dim, `   +${wfs.length - wCap} more`));
@@ -188,7 +188,7 @@ function buildSections(data, ctx) {
         paint(C.run, '$') +
           '  ' +
           padEndDisplay(paint(C.value, purpose), purposeW + 2) +
-          (Number.isFinite(sh.elapsedMs) ? paint(C.dim, formatAge(sh.elapsedMs, { precise: true })) : '')
+          (Number.isFinite(sh.elapsedMs) ? paint(C.pct, formatAge(sh.elapsedMs, { precise: true })) : '')
       );
     }
     if (shells.length > sCap) shellLines.push(paint(C.dim, `   +${shells.length - sCap} more`));
@@ -206,7 +206,7 @@ function buildSections(data, ctx) {
     // the bar carries the level color; the % stays a bright neutral so it's
     // legible at every level (green/gold/red bars can wash the digits out)
     const bar = paint(lvl, renderBar(pct, gaugeCells, { ascii })) + paint(C.pct, ` ${Math.round(pct)}%`);
-    limits.push(row(label, `${bar}${detail ? `  ${paint(C.dim, detail)}` : ''}`));
+    limits.push(row(label, `${bar}${detail ? `  ${paint(C.pct, detail)}` : ''}`));
   };
   gaugeRow(
     'CONTEXT',
